@@ -38,6 +38,12 @@ public class BinaryService {
         return binary.substring(length - shift, length) + binary.substring(0, length - shift);
     }
 
+    /**
+     * Apply XOR on strings of binary
+     * @param binary1
+     * @param binary2
+     * @return
+     */
     public String xOrBinary(String binary1, String binary2){
         binary1 = binary1.replace(" ", "");
         binary2 = binary2.replace(" ", "");
@@ -57,6 +63,26 @@ public class BinaryService {
         }
     }
 
+    public String addition(String binary1, String binary2){
+        Long dec1 = Long.parseLong(binary1, 2);
+        Long dec2 = Long.parseLong(binary2, 2);
+
+        Long sum = (dec1 + dec2) % 4294967296L; //4294967296L=2^32
+        System.out.println(dec1);
+        System.out.println(dec2);
+        System.out.println(sum);
+        return Integer.toBinaryString(sum.intValue());
+    }
+
+    public String to32BitNumber(String binary){
+        if (binary.length() > 32) {
+            // Apply modulo 2^32 to decimal form then fill in with 0s.
+            long dec = Long.parseLong(binary, 2);
+            Long mod = dec % 4294967296L; //4294967296L=2^32
+            binary = Integer.toBinaryString(mod.intValue());
+        }
+        return "0".repeat(32 - binary.length()) + binary;
+    }
     /**
      * Source: https://mkyong.com/java/java-convert-string-to-binary/
      * @param input

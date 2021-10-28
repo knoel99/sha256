@@ -30,34 +30,22 @@ class Sha256ApplicationTests {
 
 	@Test
 	void rightShiftTest() {
-		Assertions.assertEquals(
-				"011000010110001001100011", binaryService.rightShift("011000010110001001100011", -1));
-		Assertions.assertEquals(
-				"011000010110001001100011", binaryService.rightShift("011000010110001001100011", 0));
-		Assertions.assertEquals(
-				"001100001011000100110001", binaryService.rightShift("011000010110001001100011", 1));
-		Assertions.assertEquals(
-				"000000000110000101100010", binaryService.rightShift("011000010110001001100011",8));
-		Assertions.assertEquals(
-				"000000000000000000000001",
-				binaryService.rightShift("011000010110001001100011","011000010110001001100011".length()-2));
-		Assertions.assertEquals(
-				"000000000000000000000000",
-				binaryService.rightShift("011000010110001001100011","011000010110001001100011".length()));
+		String input = "011000010110001001100011";
+		Assertions.assertEquals("011000010110001001100011", binaryService.rightShift(input, -1));
+		Assertions.assertEquals("011000010110001001100011", binaryService.rightShift(input, 0));
+		Assertions.assertEquals("001100001011000100110001", binaryService.rightShift(input, 1));
+		Assertions.assertEquals("000000000110000101100010", binaryService.rightShift(input,8));
+		Assertions.assertEquals("000000000000000000000001", binaryService.rightShift(input,input.length()-2));
+		Assertions.assertEquals("000000000000000000000000", binaryService.rightShift(input,input.length()));
 	}
 
 	@Test
 	void rotateRightTest() {
-		Assertions.assertEquals(
-				"123456789", binaryService.rotateRight("123456789", -1));
-		Assertions.assertEquals(
-				"123456789", binaryService.rotateRight("123456789", 0));
-		Assertions.assertEquals(
-				"912345678", binaryService.rotateRight("123456789", 1));
-		Assertions.assertEquals(
-				"456789123", binaryService.rotateRight("123456789",6));
-		Assertions.assertEquals(
-				"123456789", binaryService.rotateRight("123456789","123456789".length()));
+		Assertions.assertEquals("123456789", binaryService.rotateRight("123456789", -1));
+		Assertions.assertEquals("123456789", binaryService.rotateRight("123456789", 0));
+		Assertions.assertEquals("912345678", binaryService.rotateRight("123456789", 1));
+		Assertions.assertEquals("456789123", binaryService.rotateRight("123456789",6));
+		Assertions.assertEquals("123456789", binaryService.rotateRight("123456789","123456789".length()));
 	}
 
 	@Test
@@ -66,5 +54,13 @@ class Sha256ApplicationTests {
 		Assertions.assertEquals("1111", binaryService.xOrBinary("1111","0000"));
 		Assertions.assertEquals("1111", binaryService.xOrBinary("0000","1111"));
 		Assertions.assertEquals("0000", binaryService.xOrBinary("1111","1111"));
+	}
+
+	@Test
+	void additionTest() {
+		//Assertions.assertEquals("0000", binaryService.addition("0000","0000"));
+		Assertions.assertEquals("1111", binaryService.addition("1111","0000"));
+		Assertions.assertEquals("1111", binaryService.addition("0000","1111"));
+		Assertions.assertEquals("11110", binaryService.addition("1111","1111"));
 	}
 }
