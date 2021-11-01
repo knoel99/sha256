@@ -1,5 +1,6 @@
 package com.kimnoel.sha256.service;
 
+import com.kimnoel.sha256.config.PropertiesExtractor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,19 +16,24 @@ public class ConstantsService {
 
     private ConstantsService(){}
 
-    @Value(value = "${primes}")
-    private static String primes;
 
 
-    public static String getConstants(String binary){
-        List<String> primeList = Arrays.asList(primes.split(";"));
 
+    public static List<String> getConstants(){
+        String[] primeList = PropertiesExtractor.getProperties("primes").split(",");
+        List<String> result = new ArrayList<>();
 
-        return "0".repeat(shift) + binary.substring(0, length - shift);
+        for (String prime : primeList){
+            result.add(to32BitsFractionalPartOfCubeRoot(Integer.parseInt(prime)));
+        }
+
+        return result;
     }
 
-    public static byte getFractionalPart(Double x){
-        return x.byteValue();
+    public static String to32BitsFractionalPartOfCubeRoot(Integer x){
+        Double value = (Math.cbrt(x) % 1)*4294967296d; //4294967296L=2^32
+
+        return BinaryService.to32Bits(Long.toBinaryString(value.longValue()));
     }
 
 }
