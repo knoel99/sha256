@@ -3,22 +3,20 @@ package com.kimnoel.sha256.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class BinaryServiceTest {
+public class BinaryServiceTest {
 
 	@Autowired
 	BinaryService binaryService;
 
 	@Test
-	void convertStringToBinaryTest() {
+	public void convertStringToBinaryTest() {
 		Assertions.assertEquals("011000010110001001100011", binaryService.convertMessageStringToBinary("abc"));
 		Assertions.assertEquals("0100100001100101011011000110110001101111", binaryService.convertMessageStringToBinary("Hello"));
 	}
 
 	@Test
-	void prettyBinaryTest() {
+	public void prettyBinaryTest() {
 		Assertions.assertEquals(
 				"01100001 01100010 01100011",
 				binaryService.prettyBinary("011000010110001001100011", 8, " "));
@@ -28,7 +26,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void rightShiftTest() {
+	public void rightShiftTest() {
 		String input = "011000010110001001100011";
 		Assertions.assertEquals("011000010110001001100011", binaryService.rightShift(input, -1));
 		Assertions.assertEquals("011000010110001001100011", binaryService.rightShift(input, 0));
@@ -39,7 +37,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void rotateRightTest() {
+	public void rotateRightTest() {
 		Assertions.assertEquals("123456789", binaryService.rotateRight("123456789", -1));
 		Assertions.assertEquals("123456789", binaryService.rotateRight("123456789", 0));
 		Assertions.assertEquals("912345678", binaryService.rotateRight("123456789", 1));
@@ -48,7 +46,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void xOrTest() {
+	public void xOrTest() {
 		Assertions.assertEquals("0000", binaryService.xOr("0000","0000"));
 		Assertions.assertEquals("1111", binaryService.xOr("1111","0000"));
 		Assertions.assertEquals("1111", binaryService.xOr("0000","1111"));
@@ -56,7 +54,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void to32BitsTest() {
+	public void to32BitsTest() {
 		Assertions.assertEquals("00000000000000000000000000000000", binaryService.to32Bits("0000"));
 		Assertions.assertEquals("00000000000000000000000000000001", binaryService.to32Bits("1"));
 		Assertions.assertEquals("00000000000000000000001001001001", binaryService.to32Bits("1001001001"));
@@ -64,7 +62,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void additionTest() {
+	public void additionTest() {
 		String expected = "00000000000000000000000000000000";
 		String binary1  = "0";
 		String binary2  = "00000";
@@ -87,7 +85,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void additionTest2() {
+	public void additionTest2() {
 		String expected = "00000000000000000000000000000000";
 		String binary1  = "0";
 		String binary2  = "00";
@@ -118,35 +116,35 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void sigma0Test() {
+	public void sigma0Test() {
 		String expected = "11110001111111111100011110000000";
 		String binary   = "00000000000000000011111111111111";
 		Assertions.assertEquals(expected, binaryService.sigma0(binary));
 	}
 
 	@Test
-	void sigma1Test() {
+	public void sigma1Test() {
 		String expected = "00011000000000000110000000001111";
 		String binary   = "00000000000000000011111111111111";
 		Assertions.assertEquals(expected, binaryService.sigma1(binary));
 	}
 
 	@Test
-	void uSigma0Test() {
+	public void uSigma0Test() {
 		String expected = "00111111000001111111001111111110";
 		String binary   = "00000000000000000011111111111111";
 		Assertions.assertEquals(expected, binaryService.uSigma0(binary));
 	}
 
 	@Test
-	void uSigma1Test() {
+	public void uSigma1Test() {
 		String expected = "00000011111111111111111101111000";
 		String binary   = "00000000000000000011111111111111";
 		Assertions.assertEquals(expected, binaryService.uSigma1(binary));
 	}
 
 	@Test
-	void andTest() {
+	public void andTest() {
 		String expected = "100010";
 		String binary1  = "101010";
 		String binary2  = "100110";
@@ -154,14 +152,14 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void notTest() {
+	public void notTest() {
 		String expected = "100010";
 		String binary   = "011101";
 		Assertions.assertEquals(expected, binaryService.not(binary));
 	}
 
 	@Test
-	void choiceTest() {
+	public void choiceTest() {
 		String expected = "11111111000000000000000011111111";
 		String binary1  = "00000000111111110000000011111111";
 		String binary2  = "00000000000000001111111111111111";
@@ -170,7 +168,7 @@ class BinaryServiceTest {
 	}
 
 	@Test
-	void majorityTest() {
+	public void majorityTest() {
 		String expected = "00000000111111110000000011111111";
 		String binary1  = "00000000111111110000000011111111";
 		String binary2  = "00000000000000001111111111111111";
