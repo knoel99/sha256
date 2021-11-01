@@ -1,14 +1,17 @@
 package com.kimnoel.sha256.service;
 
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 public class BinaryService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BinaryService.class);
+
+    private BinaryService(){}
 
     /**
      * Rotate this string "123456789" into "000000123" by removing the last chunk of string with length shift = 6
@@ -17,7 +20,7 @@ public class BinaryService {
      * @param shift
      * @return
      */
-    public String rightShift(String binary, int shift){
+    public static String rightShift(String binary, int shift){
         if (shift < 0) return binary;
         int length = binary.length();
 
@@ -31,14 +34,20 @@ public class BinaryService {
      * @param shift
      * @return
      */
-    public String rotateRight(String binary, int shift){
+    public static String rotateRight(String binary, int shift){
         if (shift < 0) return binary;
         int length = binary.length();
 
         return binary.substring(length - shift, length) + binary.substring(0, length - shift);
     }
 
-    public String xOrBinary(String binary1, String binary2){
+    /**
+     * Apply XOR on strings of binary
+     * @param binary1
+     * @param binary2
+     * @return
+     */
+    public static String xOr(String binary1, String binary2){
         binary1 = binary1.replace(" ", "");
         binary2 = binary2.replace(" ", "");
 
@@ -57,12 +66,139 @@ public class BinaryService {
         }
     }
 
+        public static String to32Bits(String binary){
+        if (binary.length() < 32)
+            return "0".repeat(32 - binary.length()) + binary;
+        else
+            return binary.substring(binary.length()-32);
+    }
+
+    public static String addition(String binary1, String binary2){
+        Long dec1 = Long.parseLong(binary1, 2);
+        Long dec2 = Long.parseLong(binary2, 2);
+
+        Long sum = (dec1 + dec2) % 4294967296L; //4294967296L=2^32
+        return to32Bits(Integer.toBinaryString(sum.intValue()));
+    }
+
+    public static String addition(String binary1, String binary2, String binary3, String binary4){
+        Long dec1 = Long.parseLong(binary1, 2);
+        Long dec2 = Long.parseLong(binary2, 2);
+        Long dec3 = Long.parseLong(binary3, 2);
+        Long dec4 = Long.parseLong(binary4, 2);
+
+        Long sum = (dec1 + dec2 + dec3 + dec4) % 4294967296L; //4294967296L=2^32
+        return to32Bits(Integer.toBinaryString(sum.intValue()));
+    }
+
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%830-sigma0rb
+     * σ0(b) = rotateRight(b,7) ^ rotateRight(b,18) ^ rightShift(b,3)
+     * @param binary
+     * @return
+     */
+    public static String sigma0(String binary){
+        String b = to32Bits(binary);
+        return xOr(
+                xOr(rotateRight(b,7), rotateRight(b,18)),
+                rightShift(b,3));
+    }
+
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%831-sigma1rb
+     * σ1(b) = rotateRight(b,17) ^ rotateRight(b,19) ^ rightShift(b,10)
+     * @param binary
+     * @return
+     */
+    public static String sigma1(String binary){
+        String b = to32Bits(binary);
+        return xOr(
+                xOr(rotateRight(b,17), rotateRight(b,19)),
+                rightShift(b,10));
+    }
+
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%830-usigma0rb
+     * Σ0(b) = rotateRight(b,2) ^ rotateRight(b,13) ^ rotateRight(b,22)
+     * @param binary
+     * @return
+     */
+    public static String uSigma0(String binary){
+        String b = to32Bits(binary);
+        return xOr(
+                xOr(rotateRight(b,2), rotateRight(b,13)),
+                rotateRight(b,22));
+    }
+
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%831-usigma1rb
+     * Σ1(b) = rotateRight(b,6) ^ rotateRight(b,11) ^ rotateRight(b,25)
+     * @param binary
+     * @return
+     */
+    public static String uSigma1(String binary){
+        String b = to32Bits(binary);
+        return xOr(
+                xOr(rotateRight(b,6), rotateRight(b,11)),
+                rotateRight(b,25));
+    }
+
+    public static String and(String binary1, String binary2) {
+        StringBuilder result = new StringBuilder();
+        char[] b1 = binary1.toCharArray();
+        char[] b2 = binary2.toCharArray();
+
+        for (int i=0;i<binary1.length();i++) {
+            result.append(('1' == b1[i] && '1' == b2[i])? "1" : "0");
+        }
+        return result.toString();
+
+    }
+
+    public static String not(String binary) {
+        StringBuilder result = new StringBuilder();
+        char[] b = binary.toCharArray();
+
+        for (int i=0;i<binary.length();i++) {
+            result.append(('1' == b[i])? "0" : "1");
+
+        }
+        return result.toString();
+
+    }
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#choice-chrb
+     * This function uses the x bit to choose between the y and z bits.
+     * It chooses the y bit if x=1, and chooses the z bit if x=0.
+     * Ch(x, y, z) = (x & y) ^ (~x & z)
+     * @param b1
+     * @param b2
+     * @param b3
+     * @return
+     */
+    public static String choice(String b1, String b2, String b3){
+        return xOr(and(b1, b2), and(not(b1), b3));
+    }
+
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#majority-majrb
+     * This function returns the majority of the three bits.
+     * Maj(x, y, z) = (x & y) ^ (x & z) ^ (y & z)
+     * @param b1
+     * @param b2
+     * @param b3
+     * @return
+     */
+    public static String majority(String b1, String b2, String b3){
+        return xOr(xOr(and(b1, b2), and(b1, b3)), and(b2, b3));
+    }
+
     /**
      * Source: https://mkyong.com/java/java-convert-string-to-binary/
      * @param input
      * @return
      */
-    public String convertStringToBinary(String input) {
+    public static String convertMessageStringToBinary(String input) {
 
         StringBuilder result = new StringBuilder();
         char[] chars = input.toCharArray();
@@ -83,7 +219,7 @@ public class BinaryService {
      * @param separator
      * @return
      */
-    public String prettyBinary(String binary, int blockSize, String separator) {
+    public static String prettyBinary(String binary, int blockSize, String separator) {
 
         List<String> result = new ArrayList<>();
         int index = 0;
