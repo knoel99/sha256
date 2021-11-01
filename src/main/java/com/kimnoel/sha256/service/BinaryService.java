@@ -1,14 +1,17 @@
 package com.kimnoel.sha256.service;
 
-import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Service
 public class BinaryService {
 
+    private static final Logger logger = LoggerFactory.getLogger(BinaryService.class);
+
+    private BinaryService(){}
 
     /**
      * Rotate this string "123456789" into "000000123" by removing the last chunk of string with length shift = 6
@@ -17,7 +20,7 @@ public class BinaryService {
      * @param shift
      * @return
      */
-    public String rightShift(String binary, int shift){
+    public static String rightShift(String binary, int shift){
         if (shift < 0) return binary;
         int length = binary.length();
 
@@ -31,7 +34,7 @@ public class BinaryService {
      * @param shift
      * @return
      */
-    public String rotateRight(String binary, int shift){
+    public static String rotateRight(String binary, int shift){
         if (shift < 0) return binary;
         int length = binary.length();
 
@@ -44,7 +47,7 @@ public class BinaryService {
      * @param binary2
      * @return
      */
-    public String xOr(String binary1, String binary2){
+    public static String xOr(String binary1, String binary2){
         binary1 = binary1.replace(" ", "");
         binary2 = binary2.replace(" ", "");
 
@@ -63,14 +66,14 @@ public class BinaryService {
         }
     }
 
-        public String to32Bits(String binary){
+        public static String to32Bits(String binary){
         if (binary.length() < 32)
             return "0".repeat(32 - binary.length()) + binary;
         else
             return binary.substring(binary.length()-32);
     }
 
-    public String addition(String binary1, String binary2){
+    public static String addition(String binary1, String binary2){
         Long dec1 = Long.parseLong(binary1, 2);
         Long dec2 = Long.parseLong(binary2, 2);
 
@@ -78,7 +81,7 @@ public class BinaryService {
         return to32Bits(Integer.toBinaryString(sum.intValue()));
     }
 
-    public String addition(String binary1, String binary2, String binary3, String binary4){
+    public static String addition(String binary1, String binary2, String binary3, String binary4){
         Long dec1 = Long.parseLong(binary1, 2);
         Long dec2 = Long.parseLong(binary2, 2);
         Long dec3 = Long.parseLong(binary3, 2);
@@ -94,7 +97,7 @@ public class BinaryService {
      * @param binary
      * @return
      */
-    public String sigma0(String binary){
+    public static String sigma0(String binary){
         String b = to32Bits(binary);
         return xOr(
                 xOr(rotateRight(b,7), rotateRight(b,18)),
@@ -107,7 +110,7 @@ public class BinaryService {
      * @param binary
      * @return
      */
-    public String sigma1(String binary){
+    public static String sigma1(String binary){
         String b = to32Bits(binary);
         return xOr(
                 xOr(rotateRight(b,17), rotateRight(b,19)),
@@ -120,7 +123,7 @@ public class BinaryService {
      * @param binary
      * @return
      */
-    public String uSigma0(String binary){
+    public static String uSigma0(String binary){
         String b = to32Bits(binary);
         return xOr(
                 xOr(rotateRight(b,2), rotateRight(b,13)),
@@ -133,14 +136,14 @@ public class BinaryService {
      * @param binary
      * @return
      */
-    public String uSigma1(String binary){
+    public static String uSigma1(String binary){
         String b = to32Bits(binary);
         return xOr(
                 xOr(rotateRight(b,6), rotateRight(b,11)),
                 rotateRight(b,25));
     }
 
-    public String and(String binary1, String binary2) {
+    public static String and(String binary1, String binary2) {
         StringBuilder result = new StringBuilder();
         char[] b1 = binary1.toCharArray();
         char[] b2 = binary2.toCharArray();
@@ -152,7 +155,7 @@ public class BinaryService {
 
     }
 
-    public String not(String binary) {
+    public static String not(String binary) {
         StringBuilder result = new StringBuilder();
         char[] b = binary.toCharArray();
 
@@ -173,7 +176,7 @@ public class BinaryService {
      * @param b3
      * @return
      */
-    public String choice(String b1, String b2, String b3){
+    public static String choice(String b1, String b2, String b3){
         return xOr(and(b1, b2), and(not(b1), b3));
     }
 
@@ -186,7 +189,7 @@ public class BinaryService {
      * @param b3
      * @return
      */
-    public String majority(String b1, String b2, String b3){
+    public static String majority(String b1, String b2, String b3){
         return xOr(xOr(and(b1, b2), and(b1, b3)), and(b2, b3));
     }
 
@@ -195,7 +198,7 @@ public class BinaryService {
      * @param input
      * @return
      */
-    public String convertMessageStringToBinary(String input) {
+    public static String convertMessageStringToBinary(String input) {
 
         StringBuilder result = new StringBuilder();
         char[] chars = input.toCharArray();
@@ -216,7 +219,7 @@ public class BinaryService {
      * @param separator
      * @return
      */
-    public String prettyBinary(String binary, int blockSize, String separator) {
+    public static String prettyBinary(String binary, int blockSize, String separator) {
 
         List<String> result = new ArrayList<>();
         int index = 0;
