@@ -66,11 +66,18 @@ public class BinaryService {
         }
     }
 
-        public static String to32Bits(String binary){
+    public static String to32Bits(String binary){
         if (binary.length() < 32)
             return "0".repeat(32 - binary.length()) + binary;
         else
             return binary.substring(binary.length()-32);
+    }
+
+    public static String to64Bits(String binary){
+        if (binary.length() < 64)
+            return "0".repeat(64 - binary.length()) + binary;
+        else
+            return binary.substring(binary.length()-64);
     }
 
     public static String addition(String binary1, String binary2){
