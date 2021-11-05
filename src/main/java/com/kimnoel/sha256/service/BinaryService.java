@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -95,6 +96,17 @@ public class BinaryService {
         Long dec4 = Long.parseLong(binary4, 2);
 
         Long sum = (dec1 + dec2 + dec3 + dec4) % 4294967296L; //4294967296L=2^32
+        return to32Bits(Integer.toBinaryString(sum.intValue()));
+    }
+
+    public static String addition(String binary1, String binary2, String binary3, String binary4, String binary5){
+        Long dec1 = Long.parseLong(binary1, 2);
+        Long dec2 = Long.parseLong(binary2, 2);
+        Long dec3 = Long.parseLong(binary3, 2);
+        Long dec4 = Long.parseLong(binary4, 2);
+        Long dec5 = Long.parseLong(binary5, 2);
+
+        Long sum = (dec1 + dec2 + dec3 + dec4 + dec5) % 4294967296L; //4294967296L=2^32
         return to32Bits(Integer.toBinaryString(sum.intValue()));
     }
 
@@ -217,6 +229,22 @@ public class BinaryService {
         }
         return result.toString();
 
+    }
+
+    /**
+     * Source: https://stackoverflow.com/a/37907714/10944474
+     * Splits the input string into 8-char-sections (Since a char has 8 bits = 1 byte)
+     * Go through each 8-char-section and turn it into an int and then to a char
+     * @param input Binary input as String
+     * @return Output text (t)
+     */
+    public static String convertBinaryToMessageString(String input) {
+        StringBuilder sb = new StringBuilder(); // Some place to store the chars
+
+        Arrays.stream(input.split("(?<=\\G.{8})"))
+                .forEach(s -> sb.append((char) Integer.parseInt(s, 2)));
+
+        return sb.toString();
     }
 
     /**

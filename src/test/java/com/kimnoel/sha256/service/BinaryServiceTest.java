@@ -12,6 +12,16 @@ public class BinaryServiceTest {
 	}
 
 	@Test
+	public void convertMessageStringToBinaryTest() {
+		Assertions.assertEquals("011000010110001001100011", BinaryService.convertMessageStringToBinary("abc"));
+	}
+
+	@Test
+	public void convertBinaryToMessageStringTest() {
+		Assertions.assertEquals("abc", BinaryService.convertBinaryToMessageString("011000010110001001100011"));
+	}
+
+	@Test
 	public void prettyBinaryTest() {
 		Assertions.assertEquals(
 				"01100001 01100010 01100011",
