@@ -18,7 +18,16 @@ public class BinaryServiceTest {
 
 	@Test
 	public void convertBinaryToMessageStringTest() {
-		Assertions.assertEquals("abc", BinaryService.convertBinaryToMessageString("011000010110001001100011"));
+		Assertions.assertEquals("abc", BinaryService.binaryToMessageString("011000010110001001100011"));
+	}
+
+	@Test
+	public void binaryToHexaTest() {
+		Assertions.assertEquals("a", BinaryService.binaryToHexa("1010"));
+		Assertions.assertEquals("b", BinaryService.binaryToHexa("1011"));
+		Assertions.assertEquals("c", BinaryService.binaryToHexa("1100"));
+		Assertions.assertEquals("0", BinaryService.binaryToHexa("0000"));
+		Assertions.assertEquals("1", BinaryService.binaryToHexa("0001"));
 	}
 
 	@Test

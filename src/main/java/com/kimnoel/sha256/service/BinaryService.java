@@ -238,13 +238,26 @@ public class BinaryService {
      * @param input Binary input as String
      * @return Output text (t)
      */
-    public static String convertBinaryToMessageString(String input) {
-        StringBuilder sb = new StringBuilder(); // Some place to store the chars
+    public static String binaryToMessageString(String input) {
+        StringBuilder sb = new StringBuilder();
 
         Arrays.stream(input.split("(?<=\\G.{8})"))
                 .forEach(s -> sb.append((char) Integer.parseInt(s, 2)));
 
         return sb.toString();
+    }
+
+    public static String binaryToHash(String input) {
+        StringBuilder sb = new StringBuilder();
+
+        Arrays.stream(input.split("(?<=\\G.{4})"))
+                .forEach(s -> sb.append(binaryToHexa(s)));
+
+        return sb.toString();
+    }
+
+    public static String binaryToHexa(String binaryStr) {
+        return Integer.toString(Integer.parseInt(binaryStr,2),16);
     }
 
     /**

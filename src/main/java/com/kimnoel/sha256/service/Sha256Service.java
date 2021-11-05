@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class Sha256Service {
@@ -51,37 +53,60 @@ public class Sha256Service {
         return messageSchedule;
     }
 
-    public static String tempWord1(int index, List<String> messageSchedule) {
+    public static String tmpWord1(int index, List<String> messageSchedule, List<String> binHash) {
         return BinaryService.addition(
-                BinaryService.uSigma1(ConstantsService.E),
-                BinaryService.choice(ConstantsService.E, ConstantsService.F, ConstantsService.G),
-                ConstantsService.H,
+                BinaryService.uSigma1(binHash.get(4)),
+                BinaryService.choice(binHash.get(4), binHash.get(5), binHash.get(6)),
+                binHash.get(7),
                 ConstantsService.BIN_CONSTANT_64_FIRST_CUBE_ROOT.get(index),
                 messageSchedule.get(index)
         );
     }
 
-    public static String tempWord2() {
+    public static String tmpWord2(List<String> binHash) {
         return BinaryService.addition(
-                BinaryService.uSigma0(ConstantsService.A),
-                BinaryService.majority(ConstantsService.A, ConstantsService.B, ConstantsService.C)
+                BinaryService.uSigma0(binHash.get(0)),
+                BinaryService.majority(binHash.get(0), binHash.get(1), binHash.get(2))
         );
     }
 
     public static List<String> compression(List<String> messageSchedule) {
-        List<String> binInitialHash = ConstantsService.getBinInitialHash();
-
-        for (int i=0; i<binInitialHash.size(); i++) {
-            //System.out.println("binInitialHash.get(i) = "+ binInitialHash.get(i)+ " tempWord1(i, binInitialHash) = "+tempWord1(i, binInitialHash));
-            binInitialHash.set(i, BinaryService.addition(binInitialHash.get(i), tempWord1(i, binInitialHash)));
-            //System.out.println("binInitialHash.get(i) = "+ binInitialHash.get(i));
-        }
+        List<String> binHash = new ArrayList<>(ConstantsService.BIN_INITIAL_HASH);
+        String tmpWord1, tmpWord2;
 
         for (int i=0; i<messageSchedule.size(); i++) {
-            binInitialHash.add(0, BinaryService.addition(tempWord1(i, messageSchedule), tempWord2()));
-            binInitialHash.set(4, BinaryService.addition(binInitialHash.get(4), tempWord1(i, messageSchedule)));
-            binInitialHash.remove(binInitialHash.size()-1);
+            tmpWord1 = tmpWord1(i, messageSchedule, binHash);
+            tmpWord2 = tmpWord2(binHash);
+
+            binHash.add(0, BinaryService.addition(tmpWord1, tmpWord2));
+            binHash.set(4, BinaryService.addition(binHash.get(4), tmpWord1));
+            binHash.remove(binHash.size()-1);
         }
-        return binInitialHash;
+        
+        /*
+        After we have compressed the entire message schedule,
+        we add the resulting hash value to the initial hash value we started with.
+        This gives us the final hash value for this message block.
+         */
+        for (int i=0; i<binHash.size(); i++) {
+            binHash.set(i,BinaryService.addition(binHash.get(i), ConstantsService.BIN_INITIAL_HASH.get(i)));
+        }
+
+        return binHash;
+    }
+
+    public static String sha256(List<String> binHash) {
+        StringBuilder sb = new StringBuilder();
+        binHash.forEach(s -> sb.append(BinaryService.binaryToHash(s)));
+        return sb.toString();
+    }
+
+    public static String sha256(String message) {
+        String binMessage = BinaryService.convertMessageStringToBinary(message);
+        String paddedMessage = padding(binMessage);
+        List<String> initMessageSchedule = initMessageSchedule(paddedMessage);
+        List<String> expandMessageSchedule = expandMessageSchedule(initMessageSchedule);
+        List<String> binaryToHash = compression(expandMessageSchedule);
+        return sha256(binaryToHash);
     }
 }

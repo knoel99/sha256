@@ -28,7 +28,7 @@ public class ConstantsService {
     public static final String H = "01011011111000001100110100011001";
 
     public static final List<String> BIN_CONSTANT_64_FIRST_CUBE_ROOT = getBinConstant64FirstCubeRoot();
-    public static final List<String> BIN_INITIAL_HASH = getBinConstant64FirstCubeRoot();
+    public static final List<String> BIN_INITIAL_HASH = getBinInitialHash();
 
 
     public static List<String> getBinInitialHash(){
