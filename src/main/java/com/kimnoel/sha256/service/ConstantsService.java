@@ -4,12 +4,9 @@ import com.kimnoel.sha256.config.PropertiesExtractor;
 import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 public class ConstantsService {
@@ -58,14 +55,14 @@ public class ConstantsService {
     public static String to32BitsFractionalPartOfCubeRoot(Integer x){
         Double value = (Math.cbrt(x) % 1)*4294967296d; //4294967296L=2^32
 
-        return BinaryService.to32Bits(Long.toBinaryString(value.longValue()));
+        return WordService.to32Bits(Long.toBinaryString(value.longValue()));
     }
 
 
     public static String to32BitsFractionalPartOfSquareRoot(Integer x){
         Double value = (Math.sqrt(x) % 1)*4294967296d; //4294967296L=2^32
 
-        return BinaryService.to32Bits(Long.toBinaryString(value.longValue()));
+        return WordService.to32Bits(Long.toBinaryString(value.longValue()));
     }
 
 }

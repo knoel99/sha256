@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Sha256Service {
@@ -29,7 +28,7 @@ public class Sha256Service {
         if (nbPaddingZeros < 0) nbPaddingZeros+=512;
 
         String separator = "1";
-        String tail = BinaryService.to64Bits(Integer.toBinaryString(headBinaryMessage.length()));
+        String tail = WordService.to64Bits(Integer.toBinaryString(headBinaryMessage.length()));
 
         return headBinaryMessage + separator + "0".repeat(nbPaddingZeros) + tail;
     }
@@ -53,7 +52,7 @@ public class Sha256Service {
         for (int i=0; i<=nbPaddedMsg; i++){
             head = headBinaryMessage.substring(indexInputBegin, indexInputEnd);
 
-            tail = BinaryService.to64Bits(Integer.toBinaryString(head.length()));
+            tail = WordService.to64Bits(Integer.toBinaryString(head.length()));
             indexHeadAndSeparator = head.length() +1;
 
             paddings.add(head + separator + "0".repeat(indexTail - indexHeadAndSeparator) + tail);
@@ -121,10 +120,10 @@ public class Sha256Service {
      */
     public static List<String> expandMessageSchedule(List<String> messageSchedule) {
         for (int i=16; i<64; i++) {
-            messageSchedule.add(BinaryService.addition(
-                    BinaryService.sigma1(messageSchedule.get(i-2)),
+            messageSchedule.add(WordService.addition(
+                    WordService.sigma1(messageSchedule.get(i-2)),
                     messageSchedule.get(i-7),
-                    BinaryService.sigma0(messageSchedule.get(i-15)),
+                    WordService.sigma0(messageSchedule.get(i-15)),
                     messageSchedule.get(i-16))
             );
         }
@@ -139,10 +138,10 @@ public class Sha256Service {
     public static List<List<String>> expandMessageSchedules(List<List<String>> messageSchedules) {
         for (List<String> messageSchedule : messageSchedules) {
             for (int i = 16; i < 64; i++) {
-                messageSchedule.add(BinaryService.addition(
-                        BinaryService.sigma1(messageSchedule.get(i - 2)),
+                messageSchedule.add(WordService.addition(
+                        WordService.sigma1(messageSchedule.get(i - 2)),
                         messageSchedule.get(i - 7),
-                        BinaryService.sigma0(messageSchedule.get(i - 15)),
+                        WordService.sigma0(messageSchedule.get(i - 15)),
                         messageSchedule.get(i - 16))
                 );
             }
@@ -151,9 +150,9 @@ public class Sha256Service {
     }
 
     public static String tmpWord1(int index, List<String> messageSchedule, List<String> binHash) {
-        return BinaryService.addition(
-                BinaryService.uSigma1(binHash.get(4)),
-                BinaryService.choice(binHash.get(4), binHash.get(5), binHash.get(6)),
+        return WordService.addition(
+                WordService.uSigma1(binHash.get(4)),
+                WordService.choice(binHash.get(4), binHash.get(5), binHash.get(6)),
                 binHash.get(7),
                 ConstantsService.BIN_CONSTANT_64_FIRST_CUBE_ROOT.get(index),
                 messageSchedule.get(index)
@@ -161,9 +160,9 @@ public class Sha256Service {
     }
 
     public static String tmpWord2(List<String> binHash) {
-        return BinaryService.addition(
-                BinaryService.uSigma0(binHash.get(0)),
-                BinaryService.majority(binHash.get(0), binHash.get(1), binHash.get(2))
+        return WordService.addition(
+                WordService.uSigma0(binHash.get(0)),
+                WordService.majority(binHash.get(0), binHash.get(1), binHash.get(2))
         );
     }
 
@@ -175,8 +174,8 @@ public class Sha256Service {
             tmpWord1 = tmpWord1(i, messageSchedule, binHash);
             tmpWord2 = tmpWord2(binHash);
 
-            binHash.add(0, BinaryService.addition(tmpWord1, tmpWord2));
-            binHash.set(4, BinaryService.addition(binHash.get(4), tmpWord1));
+            binHash.add(0, WordService.addition(tmpWord1, tmpWord2));
+            binHash.set(4, WordService.addition(binHash.get(4), tmpWord1));
             binHash.remove(binHash.size()-1);
         }
         
@@ -186,7 +185,7 @@ public class Sha256Service {
         This gives us the final hash value for this message block.
          */
         for (int i=0; i<binHash.size(); i++) {
-            binHash.set(i,BinaryService.addition(binHash.get(i), initialBinHash.get(i)));
+            binHash.set(i, WordService.addition(binHash.get(i), initialBinHash.get(i)));
         }
 
         return binHash;
@@ -207,12 +206,12 @@ public class Sha256Service {
 
     public static String sha256(List<String> binHash) {
         StringBuilder sb = new StringBuilder();
-        binHash.forEach(s -> sb.append(BinaryService.binaryToHash(s)));
+        binHash.forEach(s -> sb.append(WordService.binaryToHash(s)));
         return sb.toString();
     }
 
     public static String sha256(String message) {
-        String binMessage = BinaryService.convertMessageStringToBinary(message);
+        String binMessage = WordService.convertMessageStringToBinary(message);
         String paddedMessage = padding(binMessage);
         List<String> initMessageSchedule = initMessageSchedule(paddedMessage);
         List<String> expandMessageSchedule = expandMessageSchedule(initMessageSchedule);
@@ -226,7 +225,7 @@ public class Sha256Service {
      * @return
      */
     public static String sha256Complete(String message) {
-        String binMessage = BinaryService.convertMessageStringToBinary(message);
+        String binMessage = WordService.convertMessageStringToBinary(message);
         String paddedMessages = padding(binMessage);
         List<List<String>> initMessageSchedules = initMessageSchedules(paddedMessages);
         List<List<String>> expandMessageSchedules = expandMessageSchedules(initMessageSchedules);
