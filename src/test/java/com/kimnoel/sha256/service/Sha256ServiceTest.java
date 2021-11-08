@@ -3,6 +3,7 @@ package com.kimnoel.sha256.service;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Sha256ServiceTest {
@@ -87,7 +88,7 @@ public class Sha256ServiceTest {
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> expandMessageSchedule = Sha256Service.expandMessageSchedule(initMessageSchedule);
-		List<String> actual = Sha256Service.compression(expandMessageSchedule);
+		List<String> actual = Sha256Service.compression(expandMessageSchedule, ConstantsService.BIN_INITIAL_HASH);
 
 		String expected = "10111010011110000001011010111111";
 		Assertions.assertEquals(expected, actual.get(0));
@@ -120,7 +121,7 @@ public class Sha256ServiceTest {
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> expandMessageSchedule = Sha256Service.expandMessageSchedule(initMessageSchedule);
-		List<String> actual = Sha256Service.compression(expandMessageSchedule);
+		List<String> actual = Sha256Service.compression(expandMessageSchedule, ConstantsService.BIN_INITIAL_HASH);
 
 		Assertions.assertEquals("ba7816bf", BinaryService.binaryToHash(actual.get(0)));
 		Assertions.assertEquals("8f01cfea", BinaryService.binaryToHash(actual.get(1)));
@@ -143,12 +144,34 @@ public class Sha256ServiceTest {
 		actual = Sha256Service.sha256("a");
 		Assertions.assertEquals(expected, actual);
 
-		expected = "6e4c06be210299e93f9512922cbb6b24241622dbefd59deba8dc62331d1e39cd";
-		actual = Sha256Service.sha256("wikipedia 01 DOKO ù^lc:");
-		//Assertions.assertEquals(expected, actual);
-
 		expected = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
 		actual = Sha256Service.sha256("1234567890");
 		Assertions.assertEquals(expected, actual);
 	}
+
+	@Test
+	public void sha256CompleteTest() {
+		String expected = "2ece3a9ac0e61275fe34d89ea768aff7bf6df0b2bf37f0b08113f9b0fc9bbc83";
+		String message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
+				"Mauris tincidunt diam eget turpis aliquet, volutpat volutpat enim accumsan. " +
+				"Vivamus id urna pellentesque, volutpat tellus id, lobortis ex.";
+		String actual = Sha256Service.sha256Complete(message);
+		Assertions.assertEquals(expected, actual);
+
+
+		expected = "6314bc42de9ce540e71aa532bf45ccc1c17514584013a45a7329c99c8248d6a2";
+		message = "wyzgzJdaqV\n" +
+				"MUhFcqojtu\n" +
+				"YtSUVSQ57i\n" +
+				"AkNbujoE0X\n" +
+				"OCVliESTej\n" +
+				"22KviAe3nQ\n" +
+				"JkxkjsMXkc\n" +
+				"e0jVfthJWw\n" +
+				"3mCRCsQjPp\n" +
+				"0uDvm6vv47\n";
+		actual = Sha256Service.sha256Complete(message);
+		Assertions.assertEquals(expected, actual);
+	}
+
 }
