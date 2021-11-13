@@ -1,7 +1,12 @@
 package com.kimnoel.sha256.object;
 
+import com.kimnoel.sha256.service.BitUtils;
+import com.kimnoel.sha256.service.WordUtils;
+
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Hash {
 
@@ -15,14 +20,14 @@ public class Hash {
     private String H;
     
     public Hash(){
-        this.A = "01101010000010011110011001100111";
-        this.B = "10111011011001111010111010000101";
-        this.C = "00111100011011101111001101110010";
-        this.D = "10100101010011111111010100111010";
-        this.E = "01010001000011100101001001111111";
-        this.F = "10011011000001010110100010001100";
-        this.G = "00011111100000111101100110101011";
-        this.H = "01011011111000001100110100011001";
+        this.A = fractionalPartOfSquareRootTo32Bits(2);
+        this.B = fractionalPartOfSquareRootTo32Bits(3);
+        this.C = fractionalPartOfSquareRootTo32Bits(5);
+        this.D = fractionalPartOfSquareRootTo32Bits(7);
+        this.E = fractionalPartOfSquareRootTo32Bits(11);
+        this.F = fractionalPartOfSquareRootTo32Bits(13);
+        this.G = fractionalPartOfSquareRootTo32Bits(17);
+        this.H = fractionalPartOfSquareRootTo32Bits(19);
     }
 
     public Hash(Hash hash){
@@ -36,6 +41,57 @@ public class Hash {
         this.H = hash.getH();
     }
 
+    public static String fractionalPartOfSquareRootTo32Bits(Integer x){
+        Double value = (Math.sqrt(x) % 1)*4294967296d; //4294967296L=2^32
+
+        return BitUtils.toNBits(Long.toBinaryString(value.longValue()),32);
+    }
+
+    public void shiftDown(){
+        this.H = this.getG();
+        this.G = this.getF();
+        this.F = this.getE();
+        this.E = this.getD();
+        this.D = this.getC();
+        this.C = this.getB();
+        this.B = this.getA();
+        this.A = null;
+    }
+
+    public void compression(MessageSchedule messageSchedule) throws IllegalAccessException {
+        Hash initialHash = this;
+        CubeRootConstants constants = new CubeRootConstants();
+        Word tmpWord1, tmpWord2;
+        List<Word> tmp = new ArrayList<>();
+
+        for (int i=0; i<messageSchedule.getWordList().size(); i++) {
+            tmp.clear();
+            tmpWord1 = WordUtils.tmpWord1(i, constants ,messageSchedule, this);
+            tmpWord2 = WordUtils.tmpWord2(this);
+            tmp.add(tmpWord1);
+            tmp.add(tmpWord2);
+
+            this.shiftDown();
+            this.setA(WordUtils.addition(tmp).toString());
+
+            tmp.remove(1);
+            tmp.add(new Word(this.getE()));
+            this.setE(WordUtils.addition(tmp).toString());
+        }
+
+        /*
+        After we have compressed the entire message schedule,
+        we add the resulting hash value to the initial hash value we started with.
+        This gives us the final hash value for this message block.
+         */
+        for (Field field: this.getClass().getDeclaredFields()) {
+            tmp.clear();
+            tmp.add(new Word(field.get(this).toString()));
+            tmp.add(new Word(field.get(initialHash).toString()));
+            field.set(this, WordUtils.addition(tmp));
+        }
+
+    }
 
     public String bitsToHash() throws IllegalAccessException {
         StringBuilder sb = new StringBuilder();

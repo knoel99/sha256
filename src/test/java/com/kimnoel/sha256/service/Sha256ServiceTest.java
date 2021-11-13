@@ -10,13 +10,13 @@ public class Sha256ServiceTest {
 
 	@Test
 	public void messageTest() {
-		Assertions.assertEquals("011000010110001001100011", WordService.convertMessageStringToBinary("abc"));
+		Assertions.assertEquals("011000010110001001100011", WordUtils.convertMessageStringToBinary("abc"));
 	}
 
 	@Test
 	public void paddingTest() {
 		String expected = "01100001011000100110001110000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000011000";
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String actual = Sha256Service.padding(binMessage);
 
 		Assertions.assertEquals(expected, actual);
@@ -29,7 +29,7 @@ public class Sha256ServiceTest {
 	@Test
 	public void messageScheduleTest() {
 		String expected = "01100001011000100110001110000000";
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> actual = Sha256Service.initMessageSchedule(paddedMessage);
 
@@ -51,7 +51,7 @@ public class Sha256ServiceTest {
 	@Test
 	public void expandMessageScheduleTest() {
 		String expected = "00000110010111000100001111011010";
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> actual = Sha256Service.expandMessageSchedule(initMessageSchedule);
@@ -66,7 +66,7 @@ public class Sha256ServiceTest {
 	@Test
 	public void tmpWord1Test() {
 		String expected = "01010100110110100101000011101000";
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> expandMessageSchedule = Sha256Service.expandMessageSchedule(initMessageSchedule);
@@ -83,7 +83,7 @@ public class Sha256ServiceTest {
 
 	@Test
 	public void compressionTest() {
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> expandMessageSchedule = Sha256Service.expandMessageSchedule(initMessageSchedule);
@@ -116,20 +116,20 @@ public class Sha256ServiceTest {
 
 	@Test
 	public void sha256Test() {
-		String binMessage = WordService.convertMessageStringToBinary("abc");
+		String binMessage = WordUtils.convertMessageStringToBinary("abc");
 		String paddedMessage = Sha256Service.padding(binMessage);
 		List<String> initMessageSchedule = Sha256Service.initMessageSchedule(paddedMessage);
 		List<String> expandMessageSchedule = Sha256Service.expandMessageSchedule(initMessageSchedule);
 		List<String> actual = Sha256Service.compression(expandMessageSchedule, ConstantsService.BIN_INITIAL_HASH);
 
-		Assertions.assertEquals("ba7816bf", WordService.binaryToHash(actual.get(0)));
-		Assertions.assertEquals("8f01cfea", WordService.binaryToHash(actual.get(1)));
-		Assertions.assertEquals("414140de", WordService.binaryToHash(actual.get(2)));
-		Assertions.assertEquals("5dae2223", WordService.binaryToHash(actual.get(3)));
-		Assertions.assertEquals("b00361a3", WordService.binaryToHash(actual.get(4)));
-		Assertions.assertEquals("96177a9c", WordService.binaryToHash(actual.get(5)));
-		Assertions.assertEquals("b410ff61", WordService.binaryToHash(actual.get(6)));
-		Assertions.assertEquals("f20015ad", WordService.binaryToHash(actual.get(7)));
+		Assertions.assertEquals("ba7816bf", WordUtils.binaryToHash(actual.get(0)));
+		Assertions.assertEquals("8f01cfea", WordUtils.binaryToHash(actual.get(1)));
+		Assertions.assertEquals("414140de", WordUtils.binaryToHash(actual.get(2)));
+		Assertions.assertEquals("5dae2223", WordUtils.binaryToHash(actual.get(3)));
+		Assertions.assertEquals("b00361a3", WordUtils.binaryToHash(actual.get(4)));
+		Assertions.assertEquals("96177a9c", WordUtils.binaryToHash(actual.get(5)));
+		Assertions.assertEquals("b410ff61", WordUtils.binaryToHash(actual.get(6)));
+		Assertions.assertEquals("f20015ad", WordUtils.binaryToHash(actual.get(7)));
 		Assertions.assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", Sha256Service.sha256(actual));
 	}
 

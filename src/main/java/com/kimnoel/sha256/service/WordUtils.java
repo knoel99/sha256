@@ -1,19 +1,20 @@
 package com.kimnoel.sha256.service;
 
+import com.kimnoel.sha256.object.CubeRootConstants;
+import com.kimnoel.sha256.object.Hash;
+import com.kimnoel.sha256.object.MessageSchedule;
 import com.kimnoel.sha256.object.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class WordService {
+public class WordUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(WordService.class);
+    private static final Logger logger = LoggerFactory.getLogger(WordUtils.class);
 
-    private WordService(){}
+    private WordUtils(){}
 
     /**
      * Rotate this string "123456789" into "000000123" (not using bits for readability).
@@ -21,7 +22,7 @@ public class WordService {
      * and appending 0s at the beginning of te stripped string.
      * @param shift
      */
-    public Word rightShift(Word w, int shift){
+    public static Word rightShift(Word w, int shift){
         if (shift < 0) return null;
         w.setBits("0".repeat(shift) + w.getBits().substring(0, w.getLength() - shift));
         return w;
@@ -33,7 +34,7 @@ public class WordService {
      * to the end of the result
      * @param shift
      */
-    public Word rotateRight(Word w, int shift){
+    public static Word rotateRight(Word w, int shift){
         if (shift < 0) return null;
         w.setBits(w.getBits().substring(w.getLength() - shift) + w.getBits().substring(0, w.getLength() - shift));
         return w;
@@ -44,7 +45,7 @@ public class WordService {
      * @param w2 word 2
      * @return new Word with xOR-ed bits
      */
-    public Word xOr(Word w1, Word w2){
+    public static Word xOr(Word w1, Word w2){
         if (w1.getBits().length() == w2.getBits().length()) {
             StringBuilder result = new StringBuilder();
             char[] b1 = w1.getBits().toCharArray();
@@ -75,7 +76,7 @@ public class WordService {
      * @param words list of words
      * @return the addition
      */
-    public Word addition(List<Word> words){
+    public static Word addition(List<Word> words){
         Long sum = 0L;
         long power = Long.parseLong(words.get(0).getLength().toString());
 
@@ -93,7 +94,7 @@ public class WordService {
      * @param w
      * @return
      */
-    public Word sigma0(Word w){
+    public static Word sigma0(Word w){
         return xOr(
                 xOr(rotateRight(w,7), rotateRight(w,18)),
                 rightShift(w,3));
@@ -105,7 +106,7 @@ public class WordService {
      * @param w
      * @return
      */
-    public Word sigma1(Word w){
+    public static Word sigma1(Word w){
         return xOr(
                 xOr(rotateRight(w,17), rotateRight(w,19)),
                 rightShift(w,10));
@@ -117,7 +118,7 @@ public class WordService {
      * @param w
      * @return
      */
-    public Word uSigma0(Word w){
+    public static Word bigSigma0(Word w){
         return xOr(
                 xOr(rotateRight(w,2), rotateRight(w,13)),
                 rotateRight(w,22));
@@ -129,13 +130,13 @@ public class WordService {
      * @param w
      * @return
      */
-    public Word uSigma1(Word w){
+    public static Word bigSigma1(Word w){
         return xOr(
                 xOr(rotateRight(w,6), rotateRight(w,11)),
                 rotateRight(w,25));
     }
 
-    public Word and(Word w1, Word w2) {
+    public static Word and(Word w1, Word w2) {
         StringBuilder result = new StringBuilder();
         char[] b1 = w1.getBits().toCharArray();
         char[] b2 = w2.getBits().toCharArray();
@@ -147,7 +148,7 @@ public class WordService {
 
     }
 
-    public Word not(Word w) {
+    public static Word not(Word w) {
         StringBuilder result = new StringBuilder();
         char[] b = w.getBits().toCharArray();
 
@@ -168,7 +169,7 @@ public class WordService {
      * @param w3 word 3
      * @return result
      */
-    public Word choice(Word w1, Word w2, Word w3){
+    public static Word choice(Word w1, Word w2, Word w3){
         return xOr(and(w1, w2), and(not(w1), w3));
     }
 
@@ -181,58 +182,27 @@ public class WordService {
      * @param w3 word 3
      * @return result
      */
-    public Word majority(Word w1, Word w2, Word w3){
+    public static Word majority(Word w1, Word w2, Word w3){
         return xOr(xOr(and( w1,  w2), and( w1,  w3)), and( w2,  w3));
     }
 
+    public static Word tmpWord1(int index, CubeRootConstants cubeRootConstants, MessageSchedule messageSchedule, Hash hash) {
+        List<Word> tmp = new ArrayList<>();
+        tmp.add(WordUtils.bigSigma1(new Word(hash.getE())));
+        tmp.add(WordUtils.choice(new Word(hash.getE()), new Word(hash.getF()), new Word(hash.getG())));
+        tmp.add(new Word(hash.getH()));
+        tmp.add(new Word(cubeRootConstants.getFirst64CubeRoots().get(index)));
+        tmp.add(messageSchedule.getWordList().get(index));
 
-
-    /**
-     * Source: https://mkyong.com/java/java-convert-string-to-binary/
-     * @param input
-     * @return
-     */
-    public static String convertMessageStringToBinary(String input) {
-
-        StringBuilder result = new StringBuilder();
-        char[] chars = input.toCharArray();
-        for (char aChar : chars) {
-            result.append(
-                    String.format("%8s", Integer.toBinaryString(aChar))   // char -> int, auto-cast
-                            .replaceAll(" ", "0")                         // zero pads
-            );
-        }
-        return result.toString();
-
+        return WordUtils.addition(tmp);
     }
 
-    /**
-     * Source: https://stackoverflow.com/a/37907714/10944474
-     * Splits the input string into 8-char-sections (Since a char has 8 bits = 1 byte)
-     * Go through each 8-char-section and turn it into an int and then to a char
-     * @param input Binary input as String
-     * @return Output text (t)
-     */
-    public static String binaryToMessageString(String input) {
-        StringBuilder sb = new StringBuilder();
+    public static Word tmpWord2(Hash hash) {
+        List<Word> tmp = new ArrayList<>();
+        tmp.add(WordUtils.bigSigma0(new Word(hash.getA())));
+        tmp.add(WordUtils.choice(new Word(hash.getA()), new Word(hash.getB()), new Word(hash.getC())));
 
-        Arrays.stream(input.split("(?<=\\G.{8})"))
-                .forEach(s -> sb.append((char) Integer.parseInt(s, 2)));
-
-        return sb.toString();
+        return WordUtils.addition(tmp);
     }
 
-    public static String binaryToHash(String input) {
-        StringBuilder sb = new StringBuilder();
-
-        Arrays.stream(input.split("(?<=\\G.{4})"))
-                .forEach(s -> sb.append(binaryToHexa(s)));
-
-        return sb.toString();
-    }
-
-    public static String binaryToHexa(String binaryStr) {
-        return Integer.toString(Integer.parseInt(binaryStr,2),16);
-    }
-    
 }

@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class Sha256Service {
@@ -13,56 +12,6 @@ public class Sha256Service {
 
     private Sha256Service(){}
 
-
-    /**
-     *
-     * @param headBinaryMessage
-     * @return
-     */
-    public static String padding(String headBinaryMessage){
-        int totalLength = 512;
-        int tailLength = 64;
-        int indexTail = totalLength - tailLength;
-        int indexHeadAndSeparator = headBinaryMessage.length() +1;
-        int nbPaddingZeros = (448 - (indexHeadAndSeparator)) % 512;
-        if (nbPaddingZeros < 0) nbPaddingZeros+=512;
-
-        String separator = "1";
-        String tail = WordService.to64Bits(Integer.toBinaryString(headBinaryMessage.length()));
-
-        return headBinaryMessage + separator + "0".repeat(nbPaddingZeros) + tail;
-    }
-
-    public static List<String> paddings(String headBinaryMessage){
-        int totalLength = 512;
-        int tailLength = 64;
-        int indexTail = totalLength - tailLength;
-
-        String head, tail;
-        String separator = "1";
-        List<String> paddings = new ArrayList<>();
-
-        int maxHeadLength = 447;
-        int nbPaddedMsg = headBinaryMessage.length() / maxHeadLength;
-        int indexInputBegin = 0;
-        int indexInputEnd = Math.min(headBinaryMessage.length(), maxHeadLength);
-        int indexHeadAndSeparator;
-
-        // Work on each message slice of length 447 characters and put them in the padding word list
-        for (int i=0; i<=nbPaddedMsg; i++){
-            head = headBinaryMessage.substring(indexInputBegin, indexInputEnd);
-
-            tail = WordService.to64Bits(Integer.toBinaryString(head.length()));
-            indexHeadAndSeparator = head.length() +1;
-
-            paddings.add(head + separator + "0".repeat(indexTail - indexHeadAndSeparator) + tail);
-
-            indexInputBegin = indexInputEnd;
-            indexInputEnd = Math.min(indexInputEnd + maxHeadLength, headBinaryMessage.length());
-        }
-
-        return paddings;
-    }
 
 
     /**
@@ -94,7 +43,7 @@ public class Sha256Service {
     public static List<List<String>> initMessageSchedules(String paddedMessage) {
         List<List<String>> res = new ArrayList<>();
         // Each element is a 512-multiple bit word
-        List<String> paddedMsgList = Arrays.asList(paddedMessage.split("(?<=\\G.{512})"));
+        String[] paddedMsgList = paddedMessage.split("(?<=\\G.{512})");
 
         for (String msg : paddedMsgList) {
             ArrayList<String> result = new ArrayList<>();
@@ -120,10 +69,10 @@ public class Sha256Service {
      */
     public static List<String> expandMessageSchedule(List<String> messageSchedule) {
         for (int i=16; i<64; i++) {
-            messageSchedule.add(WordService.addition(
-                    WordService.sigma1(messageSchedule.get(i-2)),
+            messageSchedule.add(WordUtils.addition(
+                    WordUtils.sigma1(messageSchedule.get(i-2)),
                     messageSchedule.get(i-7),
-                    WordService.sigma0(messageSchedule.get(i-15)),
+                    WordUtils.sigma0(messageSchedule.get(i-15)),
                     messageSchedule.get(i-16))
             );
         }
@@ -138,10 +87,10 @@ public class Sha256Service {
     public static List<List<String>> expandMessageSchedules(List<List<String>> messageSchedules) {
         for (List<String> messageSchedule : messageSchedules) {
             for (int i = 16; i < 64; i++) {
-                messageSchedule.add(WordService.addition(
-                        WordService.sigma1(messageSchedule.get(i - 2)),
+                messageSchedule.add(WordUtils.addition(
+                        WordUtils.sigma1(messageSchedule.get(i - 2)),
                         messageSchedule.get(i - 7),
-                        WordService.sigma0(messageSchedule.get(i - 15)),
+                        WordUtils.sigma0(messageSchedule.get(i - 15)),
                         messageSchedule.get(i - 16))
                 );
             }
@@ -149,22 +98,7 @@ public class Sha256Service {
         return messageSchedules;
     }
 
-    public static String tmpWord1(int index, List<String> messageSchedule, List<String> binHash) {
-        return WordService.addition(
-                WordService.uSigma1(binHash.get(4)),
-                WordService.choice(binHash.get(4), binHash.get(5), binHash.get(6)),
-                binHash.get(7),
-                ConstantsService.BIN_CONSTANT_64_FIRST_CUBE_ROOT.get(index),
-                messageSchedule.get(index)
-        );
-    }
 
-    public static String tmpWord2(List<String> binHash) {
-        return WordService.addition(
-                WordService.uSigma0(binHash.get(0)),
-                WordService.majority(binHash.get(0), binHash.get(1), binHash.get(2))
-        );
-    }
 
     public static List<String> compression(List<String> messageSchedule, List<String> initialBinHash) {
         List<String> binHash = new ArrayList<>(initialBinHash);
@@ -174,8 +108,8 @@ public class Sha256Service {
             tmpWord1 = tmpWord1(i, messageSchedule, binHash);
             tmpWord2 = tmpWord2(binHash);
 
-            binHash.add(0, WordService.addition(tmpWord1, tmpWord2));
-            binHash.set(4, WordService.addition(binHash.get(4), tmpWord1));
+            binHash.add(0, WordUtils.addition(tmpWord1, tmpWord2));
+            binHash.set(4, WordUtils.addition(binHash.get(4), tmpWord1));
             binHash.remove(binHash.size()-1);
         }
         
@@ -185,7 +119,7 @@ public class Sha256Service {
         This gives us the final hash value for this message block.
          */
         for (int i=0; i<binHash.size(); i++) {
-            binHash.set(i, WordService.addition(binHash.get(i), initialBinHash.get(i)));
+            binHash.set(i, WordUtils.addition(binHash.get(i), initialBinHash.get(i)));
         }
 
         return binHash;
@@ -206,12 +140,12 @@ public class Sha256Service {
 
     public static String sha256(List<String> binHash) {
         StringBuilder sb = new StringBuilder();
-        binHash.forEach(s -> sb.append(WordService.binaryToHash(s)));
+        binHash.forEach(s -> sb.append(WordUtils.binaryToHash(s)));
         return sb.toString();
     }
 
     public static String sha256(String message) {
-        String binMessage = WordService.convertMessageStringToBinary(message);
+        String binMessage = WordUtils.convertMessageStringToBinary(message);
         String paddedMessage = padding(binMessage);
         List<String> initMessageSchedule = initMessageSchedule(paddedMessage);
         List<String> expandMessageSchedule = expandMessageSchedule(initMessageSchedule);
@@ -225,7 +159,7 @@ public class Sha256Service {
      * @return
      */
     public static String sha256Complete(String message) {
-        String binMessage = WordService.convertMessageStringToBinary(message);
+        String binMessage = WordUtils.convertMessageStringToBinary(message);
         String paddedMessages = padding(binMessage);
         List<List<String>> initMessageSchedules = initMessageSchedules(paddedMessages);
         List<List<String>> expandMessageSchedules = expandMessageSchedules(initMessageSchedules);

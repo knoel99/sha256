@@ -5,11 +5,24 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 
-public class BitService {
+public class BitUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(BitService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BitUtils.class);
 
-    private BitService(){}
+    private BitUtils(){}
+
+    /**
+     * Normalize bits with a given length
+     * @param bits initial value
+     * @param nbBits length
+     * @return final values
+     */
+    public static String toNBits(String bits, int nbBits){
+        if (bits.length() < nbBits)
+            return "0".repeat(nbBits - bits.length()) + bits;
+        else
+            return bits.substring(bits.length()-nbBits);
+    }
 
     /**
      * Source: https://mkyong.com/java/java-convert-string-to-binary/
@@ -46,17 +59,4 @@ public class BitService {
         return sb.toString();
     }
 
-    public static String bitsToHash(String bits) {
-        StringBuilder sb = new StringBuilder();
-
-        Arrays.stream(bits.split("(?<=\\G.{4})"))
-                .forEach(s -> sb.append(bitsToHexa(s)));
-
-        return sb.toString();
-    }
-
-    public static String bitsToHexa(String bits) {
-        return Integer.toString(Integer.parseInt(bits,2),16);
-    }
-    
 }

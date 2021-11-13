@@ -1,10 +1,9 @@
 package com.kimnoel.sha256.object;
 
 
-import java.util.ArrayList;
+import com.kimnoel.sha256.service.BitUtils;
+
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A group of either 32 bits (4 bytes) or 64 bits (8 bytes).
@@ -22,16 +21,10 @@ public class Word {
     }
 
     public Word(String bits, int nbBits){
-        this.bits = toNBits(bits, nbBits);
+        this.bits = BitUtils.toNBits(bits, nbBits);
         this.length = nbBits;
     }
 
-    public String toNBits(String bits, int nbBits){
-        if (bits.length() < nbBits)
-            return "0".repeat(nbBits - bits.length()) + bits;
-        else
-            return bits.substring(bits.length()-nbBits);
-    }
 
     /**
      * Source: https://mkyong.com/java/java-convert-string-to-binary/
