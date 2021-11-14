@@ -1,11 +1,8 @@
 package com.kimnoel.sha256.object;
 
-import com.kimnoel.sha256.Utils.BitUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class HashTest {
 
@@ -22,17 +19,8 @@ public class HashTest {
 	}
 
 	@Test
-	public void compressionTest() throws IllegalAccessException {
-		String bitsMessage = BitUtils.messageToBits("abc");
-		PaddedMessage paddedMessage = new PaddedMessage(bitsMessage);
-		// paddedMessage here is expected to be only 512 bits length
-		MessageSchedule messageSchedule = new MessageSchedule(paddedMessage);
-
-		Hash hash = new Hash();
-		List<MessageSchedule> messageSchedules = new ArrayList<>();
-		messageSchedules.add(messageSchedule);
-
-		hash.compression(messageSchedules);
+	public void compressionTest() {
+		Hash hash = new Hash("abc");
 
 		String expected = "10111010011110000001011010111111";
 		Assertions.assertEquals(expected, hash.getA());
@@ -60,21 +48,9 @@ public class HashTest {
 	}
 
 
-
-
-
 	@Test
-	public void sha256Test() throws IllegalAccessException {
-		String bitsMessage = BitUtils.messageToBits("abc");
-		PaddedMessage paddedMessage = new PaddedMessage(bitsMessage);
-		// paddedMessage here is expected to be only 512 bits length
-		MessageSchedule messageSchedule = new MessageSchedule(paddedMessage);
-
-		Hash hash = new Hash();
-		List<MessageSchedule> messageSchedules = new ArrayList<>();
-		messageSchedules.add(messageSchedule);
-
-		hash.compression(messageSchedules);
+	public void sha256Test() {
+		Hash hash = new Hash("abc");
 
 		Assertions.assertEquals("ba7816bf", hash.bitsToHash("A"));
 		Assertions.assertEquals("8f01cfea", hash.bitsToHash("B"));
@@ -85,45 +61,5 @@ public class HashTest {
 		Assertions.assertEquals("b410ff61", hash.bitsToHash("G"));
 		Assertions.assertEquals("f20015ad", hash.bitsToHash("H"));
 		Assertions.assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", hash.bitsToHash());
-	}
-
-	@Test
-	public void sha256Test2() {
-		String expected = "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad";
-		Hash actual = new Hash("abc");
-		Assertions.assertEquals(expected, actual.bitsToHash());
-
-		expected = "ca978112ca1bbdcafac231b39a23dc4da786eff8147c4e72b9807785afee48bb";
-		actual = new Hash("a");
-		Assertions.assertEquals(expected, actual.bitsToHash());
-
-		expected = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
-		actual = new Hash("1234567890");
-		Assertions.assertEquals(expected, actual.bitsToHash());
-	}
-
-	@Test
-	public void sha256CompleteTest() {
-		String expected = "2ece3a9ac0e61275fe34d89ea768aff7bf6df0b2bf37f0b08113f9b0fc9bbc83";
-		String message = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. " +
-				"Mauris tincidunt diam eget turpis aliquet, volutpat volutpat enim accumsan. " +
-				"Vivamus id urna pellentesque, volutpat tellus id, lobortis ex.";
-		Hash actual = new Hash("abc");
-		Assertions.assertEquals(expected, actual.bitsToHash());
-
-
-		expected = "6314bc42de9ce540e71aa532bf45ccc1c17514584013a45a7329c99c8248d6a2";
-		message = "wyzgzJdaqV\n" +
-				"MUhFcqojtu\n" +
-				"YtSUVSQ57i\n" +
-				"AkNbujoE0X\n" +
-				"OCVliESTej\n" +
-				"22KviAe3nQ\n" +
-				"JkxkjsMXkc\n" +
-				"e0jVfthJWw\n" +
-				"3mCRCsQjPp\n" +
-				"0uDvm6vv47\n";
-		actual = new Hash(message);
-		Assertions.assertEquals(expected, actual.bitsToHash());
 	}
 }

@@ -22,6 +22,18 @@ public class Hash {
     private String G;
     private String H;
 
+    /**
+     * No argument constructor generate the initial hash with bit values:
+     * a= 01101010000010011110011001100111 = 6a09e667
+     * b= 10111011011001111010111010000101 = bb67ae85
+     * c= 00111100011011101111001101110010 = 3c6ef372
+     * d= 10100101010011111111010100111010 = a54ff53a
+     * e= 01010001000011100101001001111111 = 510e527f
+     * f= 10011011000001010110100010001100 = 9b05688c
+     * g= 00011111100000111101100110101011 = 1f83d9ab
+     * h= 01011011111000001100110100011001 = 5be0cd19
+     * 6a09e667bb67ae853c6ef372a54ff53a510e527f9b05688c1f83d9ab5be0cd19
+     */
     public Hash() {
         this.A = fractionalPartOfSquareRootTo32Bits(2);
         this.B = fractionalPartOfSquareRootTo32Bits(3);
@@ -33,6 +45,10 @@ public class Hash {
         this.H = fractionalPartOfSquareRootTo32Bits(19);
     }
 
+    /**
+     * Constructor used as a copy method.
+     * @param hash hash to copy
+     */
     public Hash(Hash hash) {
         this.A = hash.getA();
         this.B = hash.getB();
@@ -44,6 +60,20 @@ public class Hash {
         this.H = hash.getH();
     }
 
+    /**
+     * Constructor that computes the hash of the input message.
+     * For example for "abc" this gives:
+     * a= 10111010011110000001011010111111 = ba7816bf
+     * b= 10001111000000011100111111101010 = 8f01cfea
+     * c= 01000001010000010100000011011110 = 414140de
+     * d= 01011101101011100010001000100011 = 5dae2223
+     * e= 10110000000000110110000110100011 = b00361a3
+     * f= 10010110000101110111101010011100 = 96177a9c
+     * g= 10110100000100001111111101100001 = b410ff61
+     * h= 11110010000000000001010110101101 = f20015ad
+     * ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad
+     * @param message input message to hash
+     */
     public Hash(String message) {
         try {
             String bitsMessage = BitUtils.messageToBits(message);
@@ -51,7 +81,11 @@ public class Hash {
             List<MessageSchedule> messageSchedules = new ArrayList<>();
 
             Arrays.stream(paddedMessage.toString().split("(?<=\\G.{512})"))
-                    .forEach(s -> messageSchedules.add(new MessageSchedule(new PaddedMessage(s))));
+                    .forEach(s -> {
+                        MessageSchedule messageSchedule = new MessageSchedule(new PaddedMessage(s));
+                        messageSchedule.expand();
+                        messageSchedules.add(messageSchedule);
+                    });
 
             Hash hash = new Hash();
             hash.compression(messageSchedules);
@@ -70,7 +104,7 @@ public class Hash {
         }
     }
 
-        public static String fractionalPartOfSquareRootTo32Bits(Integer x) {
+    public static String fractionalPartOfSquareRootTo32Bits(Integer x) {
         Double value = (Math.sqrt(x) % 1) * 4294967296d; //4294967296L=2^32
 
         return BitUtils.toNBits(Long.toBinaryString(value.longValue()), 32);
@@ -115,21 +149,29 @@ public class Hash {
             This gives us the final hash value for this message block.
              */
             for (Field field : this.getClass().getDeclaredFields()) {
-                tmp.clear();
-                tmp.add(new Word(field.get(this).toString()));
-                tmp.add(new Word(field.get(initialHash).toString()));
-                field.set(this, WordUtils.addition(tmp));
+                if (!isLoggerAttribute(field)) {
+                    tmp.clear();
+                    tmp.add(new Word(field.get(this).toString()));
+                    tmp.add(new Word(field.get(initialHash).toString()));
+                    field.set(this, WordUtils.addition(tmp).toString());
+                }
             }
         }
 
+    }
+
+    public boolean isLoggerAttribute(Field field){
+        return field.toString().contains("org.slf4j.Logger");
     }
 
     public String bitsToHash() {
         StringBuilder sb = new StringBuilder();
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
-                Arrays.stream(field.get(this).toString().split("(?<=\\G.{4})"))
-                        .forEach(s -> sb.append(BitUtils.bitsToHexa(s)));
+                if (!isLoggerAttribute(field)) {
+                    Arrays.stream(field.get(this).toString().split("(?<=\\G.{4})"))
+                            .forEach(s -> sb.append(BitUtils.bitsToHexa(s)));
+                }
             }
         } catch (Exception e) {
             logger.error("An error occured in Hash(String message)",e);
@@ -169,6 +211,19 @@ public class Hash {
         return sb.toString();
     }
 
+    @Override
+    public String toString() {
+        return
+                "a= " + A + " = " + bitsToHash("A") + "\n" +
+                "b= " + B + " = " + bitsToHash("B") + "\n" +
+                "c= " + C + " = " + bitsToHash("C") + "\n" +
+                "d= " + D + " = " + bitsToHash("D") + "\n" +
+                "e= " + E + " = " + bitsToHash("E") + "\n" +
+                "f= " + F + " = " + bitsToHash("F") + "\n" +
+                "g= " + G + " = " + bitsToHash("G") + "\n" +
+                "h= " + H + " = " + bitsToHash("H") + "\n" +
+                bitsToHash();
+    }
 
     public String getA() {
         return A;

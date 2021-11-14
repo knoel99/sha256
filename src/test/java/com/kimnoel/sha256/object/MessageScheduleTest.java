@@ -31,7 +31,6 @@ public class MessageScheduleTest {
 
 	@Test
 	public void expandMessageScheduleTest() {
-		String expected = "01100001011000100110001110000000";
 		String bitsMessage = BitUtils.messageToBits("abc");
 		PaddedMessage paddedMessage = new PaddedMessage(bitsMessage);
 		// paddedMessage here is expected to be only 512 bits length
@@ -45,9 +44,9 @@ public class MessageScheduleTest {
 		Assertions.assertEquals("00111110100111010111101101111000", actual.getWordList().get(20).getBits());
 		Assertions.assertEquals("00000001100000111111110000000000", actual.getWordList().get(21).getBits());
 		Assertions.assertEquals("00010010110111001011111111011011", actual.getWordList().get(22).getBits());
-		Assertions.assertEquals(expected, actual.getWordList().get(47).getBits());
-
-		expected = "00010010101100011110110111101011";
-		Assertions.assertEquals(expected, actual.getWordList().get(63).getBits());
+		Assertions.assertEquals("11100010111000101100001110001110", actual.getWordList().get(23).getBits());
+		Assertions.assertEquals("11001000001000010101110000011010", actual.getWordList().get(24).getBits());
+		Assertions.assertEquals("00000110010111000100001111011010", actual.getWordList().get(47).getBits());
+		Assertions.assertEquals("00010010101100011110110111101011", actual.getWordList().get(63).getBits());
 	}
 }
