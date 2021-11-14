@@ -1,4 +1,4 @@
-package com.kimnoel.sha256.service;
+package com.kimnoel.sha256.Utils;
 
 import com.kimnoel.sha256.object.CubeRootConstants;
 import com.kimnoel.sha256.object.Hash;
@@ -24,8 +24,8 @@ public class WordUtils {
      */
     public static Word rightShift(Word w, int shift){
         if (shift < 0) return null;
-        w.setBits("0".repeat(shift) + w.getBits().substring(0, w.getLength() - shift));
-        return w;
+        String bits = "0".repeat(shift) + w.getBits().substring(0, w.getLength() - shift);
+        return new Word(bits, bits.length());
     }
 
     /**
@@ -36,8 +36,8 @@ public class WordUtils {
      */
     public static Word rotateRight(Word w, int shift){
         if (shift < 0) return null;
-        w.setBits(w.getBits().substring(w.getLength() - shift) + w.getBits().substring(0, w.getLength() - shift));
-        return w;
+        String bits = w.getBits().substring(w.getLength() - shift) + w.getBits().substring(0, w.getLength() - shift);
+        return new Word(bits, bits.length());
     }
 
     /**
@@ -55,7 +55,7 @@ public class WordUtils {
                 result.append(Integer.parseInt(String.valueOf(b1[i])) ^
                         Integer.parseInt(String.valueOf(b2[i])));
             }
-            return new Word(result.toString());
+            return new Word(result.toString(), w1.getLength());
         } else {
             return null;
         }
@@ -85,14 +85,14 @@ public class WordUtils {
         }
 
         double sumD = sum % Math.pow(2, power);
-        return new Word(Integer.toBinaryString((int) sumD));
+        return new Word(Long.toBinaryString((long) sumD));
     }
 
     /**
      * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%830-sigma0rb
      * σ0(b) = rotateRight(b,7) ^ rotateRight(b,18) ^ rightShift(b,3)
-     * @param w
-     * @return
+     * @param w word
+     * @return σ0(w)
      */
     public static Word sigma0(Word w){
         return xOr(
@@ -103,8 +103,8 @@ public class WordUtils {
     /**
      * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#%CF%831-sigma1rb
      * σ1(b) = rotateRight(b,17) ^ rotateRight(b,19) ^ rightShift(b,10)
-     * @param w
-     * @return
+     * @param w word
+     * @return σ1(w)
      */
     public static Word sigma1(Word w){
         return xOr(
@@ -144,7 +144,7 @@ public class WordUtils {
         for (int i=0;i<w1.getLength();i++) {
             result.append(('1' == b1[i] && '1' == b2[i])? "1" : "0");
         }
-        return new Word(result.toString());
+        return new Word(result.toString(), w1.getLength());
 
     }
 
@@ -156,7 +156,7 @@ public class WordUtils {
             result.append(('1' == b[i])? "0" : "1");
 
         }
-        return new Word(result.toString());
+        return new Word(result.toString(), w.getLength());
     }
     
     /**
@@ -186,6 +186,18 @@ public class WordUtils {
         return xOr(xOr(and( w1,  w2), and( w1,  w3)), and( w2,  w3));
     }
 
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#temporary-word-1-t1rb
+     * This temporary word takes the next word in the message schedule along with the next constant from the list.
+     * These values added to a Σ1 rotation of the fifth value in the state register, the choice of the values in the
+     * last three registers, and the value of the last register on its own.
+     * T1 = Σ1(e) + Ch(e, f, g) + h + Kt + Wt
+     * @param index index
+     * @param cubeRootConstants cubeRootConstants
+     * @param messageSchedule messageSchedule
+     * @param hash hash
+     * @return T1
+     */
     public static Word tmpWord1(int index, CubeRootConstants cubeRootConstants, MessageSchedule messageSchedule, Hash hash) {
         List<Word> tmp = new ArrayList<>();
         tmp.add(WordUtils.bigSigma1(new Word(hash.getE())));
@@ -197,11 +209,18 @@ public class WordUtils {
         return WordUtils.addition(tmp);
     }
 
+    /**
+     * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#temporary-word-2-t2rb
+     * This temporary word is calculated by adding a Σ0 rotation of the first value in the state register to
+     * a majority of the values in the first three registers.
+     * T2 = Σ0(a) + Maj(a, b, c)
+     * @param hash hash
+     * @return T2
+     */
     public static Word tmpWord2(Hash hash) {
         List<Word> tmp = new ArrayList<>();
         tmp.add(WordUtils.bigSigma0(new Word(hash.getA())));
-        tmp.add(WordUtils.choice(new Word(hash.getA()), new Word(hash.getB()), new Word(hash.getC())));
-
+        tmp.add(WordUtils.majority(new Word(hash.getA()), new Word(hash.getB()), new Word(hash.getC())));
         return WordUtils.addition(tmp);
     }
 

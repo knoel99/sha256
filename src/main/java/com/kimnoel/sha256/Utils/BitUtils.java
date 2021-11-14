@@ -1,4 +1,4 @@
-package com.kimnoel.sha256.service;
+package com.kimnoel.sha256.Utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +22,10 @@ public class BitUtils {
             return "0".repeat(nbBits - bits.length()) + bits;
         else
             return bits.substring(bits.length()-nbBits);
+    }
+
+    public static String bitsToHexa(String bits) {
+        return Integer.toString(Integer.parseInt(bits, 2), 16);
     }
 
     /**

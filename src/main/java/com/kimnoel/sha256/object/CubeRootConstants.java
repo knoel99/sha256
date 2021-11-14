@@ -1,7 +1,7 @@
 package com.kimnoel.sha256.object;
 
 import com.kimnoel.sha256.config.PropertiesExtractor;
-import com.kimnoel.sha256.service.BitUtils;
+import com.kimnoel.sha256.Utils.BitUtils;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,7 +1,7 @@
 package com.kimnoel.sha256.object;
 
 
-import com.kimnoel.sha256.service.BitUtils;
+import com.kimnoel.sha256.Utils.BitUtils;
 
 public class PaddedMessage {
 

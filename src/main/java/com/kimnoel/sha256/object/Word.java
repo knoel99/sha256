@@ -1,7 +1,7 @@
 package com.kimnoel.sha256.object;
 
 
-import com.kimnoel.sha256.service.BitUtils;
+import com.kimnoel.sha256.Utils.BitUtils;
 
 import java.util.Arrays;
 
@@ -16,8 +16,8 @@ public class Word {
     public Word(){}
 
     public Word(String bits){
-        this.bits = bits;
-        this.length = bits.length();
+        this.bits = BitUtils.toNBits(bits, 32);;
+        this.length = this.bits.length();
     }
 
     public Word(String bits, int nbBits){
@@ -38,12 +38,12 @@ public class Word {
         Arrays.stream(bits.split("(?<=\\G.{"+blockSize+"})"))
                 .forEach(s -> sb.append(s).append(separator));
         // Delete last separator
-        return sb.substring(0,separator.length());
+        return sb.substring(0, sb.length() - separator.length());
     }
 
     @Override
     public String toString() {
-        return bits;
+        if(bits !=null) return bits; else return "";
     }
 
     public String getBits() {
