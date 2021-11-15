@@ -1,7 +1,9 @@
 package com.kimnoel.sha256;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class Sha256Application {
 
 	public static void main(String[] args) {

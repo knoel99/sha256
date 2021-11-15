@@ -1,10 +1,11 @@
 package com.kimnoel.sha256.object;
 
 import com.kimnoel.sha256.Utils.BitUtils;
-import com.kimnoel.sha256.object.PaddedMessage;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class PaddedMessageTest {
 
 	@Test

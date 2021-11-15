@@ -5,6 +5,22 @@ import com.kimnoel.sha256.Utils.WordUtils;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Source: https://github.com/in3rsha/sha256-animation/blob/master/README.md#8-message-schedule-schedulerb-expansionrb
+ * For each message block we create a sixty-four word message schedule Wt.
+ *
+ * The first sixteen words of this message schedule are constructed from the message block.
+ * Wt = Mit
+ *
+ * (for 0 ≤ t ≤ 15)
+ *
+ * This is then expanded to a total of sixty four words by applying rotational functions to
+ * some of the words already in the schedule.
+ *
+ * Wt = σ1(Wt-2) + Wt-7 + σ0(Wt-15) + Wt-16
+ *
+ * (for 16 ≤ t ≤ 63)
+ */
 public class MessageSchedule {
 
     List<Word> wordList;

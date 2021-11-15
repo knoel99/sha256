@@ -2,8 +2,9 @@ package com.kimnoel.sha256.object;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
-
+@SpringBootTest
 public class HashTest {
 
 	@Test

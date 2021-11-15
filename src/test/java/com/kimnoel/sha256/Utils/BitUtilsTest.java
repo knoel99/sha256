@@ -1,9 +1,10 @@
 package com.kimnoel.sha256.Utils;
 
-import com.kimnoel.sha256.Utils.BitUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class BitUtilsTest {
 
 	@Test
