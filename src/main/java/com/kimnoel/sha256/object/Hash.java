@@ -2,6 +2,8 @@ package com.kimnoel.sha256.object;
 
 import com.kimnoel.sha256.Utils.BitUtils;
 import com.kimnoel.sha256.Utils.WordUtils;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +12,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@Getter
+@Setter
 public class Hash {
     private static final Logger logger = LoggerFactory.getLogger(Hash.class);
 
@@ -100,16 +104,25 @@ public class Hash {
             this.H = hash.getH();
 
         } catch (Exception e) {
-            logger.error("An error occured in Hash(String message)",e);
+            logger.error("An error occurred in Hash(String message)",e);
         }
     }
 
+    /**
+     * Extract the fractional part of the square root of the input integer and
+     * convert it into a 32 bits number.
+     * @param x integer
+     * @return 32 bits binary number
+     */
     public static String fractionalPartOfSquareRootTo32Bits(Integer x) {
         Double value = (Math.sqrt(x) % 1) * 4294967296d; //4294967296L=2^32
 
         return BitUtils.toNBits(Long.toBinaryString(value.longValue()), 32);
     }
 
+    /**
+     * Shift each value in the state registers down one position.
+     */
     public void shiftDown() {
         this.H = this.getG();
         this.G = this.getF();
@@ -121,49 +134,74 @@ public class Hash {
         this.A = null;
     }
 
-    public void compression(List<MessageSchedule> messageSchedules) throws IllegalAccessException {
+    /**
+     * shift each value in the state registers down one position, and update the following registers:
+     *
+     * The first value in the state register becomes T1 + T2.
+     * The fifth value in the state register has T1 added to it.
+     * This is one "round" of compression, and is repeated for every word in the message schedule.
+     *
+     * After we have compressed the entire message schedule,
+     * we add the resulting hash value to the initial hash value we started with.
+     * This gives us the final hash value for this message block.
+     * @param messageSchedules list of messageSchedules
+     */
+    public void compression(List<MessageSchedule> messageSchedules) {
         CubeRootConstants constants = new CubeRootConstants();
         Word tmpWord1, tmpWord2;
         List<Word> tmp = new ArrayList<>();
 
-        for (MessageSchedule messageSchedule : messageSchedules) {
-            Hash initialHash = new Hash(this);
-            for (int i = 0; i < messageSchedule.getWordList().size(); i++) {
-                tmp.clear();
-                tmpWord1 = WordUtils.tmpWord1(i, constants, messageSchedule, this);
-                tmpWord2 = WordUtils.tmpWord2(this);
-                tmp.add(tmpWord1);
-                tmp.add(tmpWord2);
+        try {
+            for (MessageSchedule messageSchedule : messageSchedules) {
+                Hash initialHash = new Hash(this);
+                for (int i = 0; i < messageSchedule.getWordList().size(); i++) {
+                    tmp.clear();
+                    tmpWord1 = WordUtils.tmpWord1(i, constants, messageSchedule, this);
+                    tmpWord2 = WordUtils.tmpWord2(this);
+                    tmp.add(tmpWord1);
+                    tmp.add(tmpWord2);
 
-                this.shiftDown();
-                this.setA(WordUtils.addition(tmp).toString());
+                    this.shiftDown();
+                    this.setA(WordUtils.addition(tmp).toString());
 
-                tmp.remove(1);
-                tmp.add(new Word(this.getE()));
-                this.setE(WordUtils.addition(tmp).toString());
-            }
+                    tmp.remove(1);
+                    tmp.add(new Word(this.getE()));
+                    this.setE(WordUtils.addition(tmp).toString());
+                }
 
             /*
             After we have compressed the entire message schedule,
             we add the resulting hash value to the initial hash value we started with.
             This gives us the final hash value for this message block.
              */
-            for (Field field : this.getClass().getDeclaredFields()) {
-                if (!isLoggerAttribute(field)) {
-                    tmp.clear();
-                    tmp.add(new Word(field.get(this).toString()));
-                    tmp.add(new Word(field.get(initialHash).toString()));
-                    field.set(this, WordUtils.addition(tmp).toString());
+                for (Field field : this.getClass().getDeclaredFields()) {
+                    if (!isLoggerAttribute(field)) {
+                        tmp.clear();
+                        tmp.add(new Word(field.get(this).toString()));
+                        tmp.add(new Word(field.get(initialHash).toString()));
+                        field.set(this, WordUtils.addition(tmp).toString());
+                    }
                 }
             }
+        } catch (Exception e) {
+            logger.error("An error occurred in compression:", e);
         }
 
     }
 
+    /**
+     * This method is used to exclude the logger attribute of this class when loop on them.
+     * @param field attribute of the class
+     * @return boolean
+     */
     public boolean isLoggerAttribute(Field field){
         return field.toString().contains("org.slf4j.Logger");
     }
 
+    /**
+     * Convert each attribute in hexadecimal and concatenate them to build the hash of SHA-256.
+     * @return SHA-256 hash
+     */
     public String bitsToHash() {
         StringBuilder sb = new StringBuilder();
         try {
@@ -174,11 +212,16 @@ public class Hash {
                 }
             }
         } catch (Exception e) {
-            logger.error("An error occured in Hash(String message)",e);
+            logger.error("An error occurred in Hash(String message)",e);
         }
         return sb.toString();
     }
 
+    /**
+     * Convert a given attribute in hexadecimal.
+     * @param attribute a given attribute
+     * @return SHA-256 hash
+     */
     public String bitsToHash(String attribute) {
         StringBuilder sb = new StringBuilder();
         switch (attribute) {
@@ -211,6 +254,11 @@ public class Hash {
         return sb.toString();
     }
 
+    /**
+     * This method is used to print the entier regiter of bits, their equivalent in hexadecimal,
+     * and the corresponding SHA-256 hash.
+     * @return the object in string
+     */
     @Override
     public String toString() {
         return
@@ -225,67 +273,4 @@ public class Hash {
                 bitsToHash();
     }
 
-    public String getA() {
-        return A;
-    }
-
-    public void setA(String a) {
-        A = a;
-    }
-
-    public String getB() {
-        return B;
-    }
-
-    public void setB(String b) {
-        B = b;
-    }
-
-    public String getC() {
-        return C;
-    }
-
-    public void setC(String c) {
-        C = c;
-    }
-
-    public String getD() {
-        return D;
-    }
-
-    public void setD(String d) {
-        D = d;
-    }
-
-    public String getE() {
-        return E;
-    }
-
-    public void setE(String e) {
-        E = e;
-    }
-
-    public String getF() {
-        return F;
-    }
-
-    public void setF(String f) {
-        F = f;
-    }
-
-    public String getG() {
-        return G;
-    }
-
-    public void setG(String g) {
-        G = g;
-    }
-
-    public String getH() {
-        return H;
-    }
-
-    public void setH(String h) {
-        H = h;
-    }
 }

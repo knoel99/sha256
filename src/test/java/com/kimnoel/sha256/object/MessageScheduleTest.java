@@ -3,7 +3,9 @@ package com.kimnoel.sha256.object;
 import com.kimnoel.sha256.Utils.BitUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class MessageScheduleTest {
 
 	@Test

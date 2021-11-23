@@ -2,12 +2,16 @@ package com.kimnoel.sha256.object;
 
 
 import com.kimnoel.sha256.Utils.BitUtils;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.Arrays;
 
 /**
  * A group of either 32 bits (4 bytes) or 64 bits (8 bytes).
  */
+@Getter
+@Setter
 public class Word {
     
     private String bits;
@@ -46,19 +50,4 @@ public class Word {
         if(bits !=null) return bits; else return "";
     }
 
-    public String getBits() {
-        return bits;
-    }
-
-    public void setBits(String bits) {
-        this.bits = bits;
-    }
-
-    public Integer getLength() {
-        return length;
-    }
-
-    public void setLength(Integer length) {
-        this.length = length;
-    }
 }

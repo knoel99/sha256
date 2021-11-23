@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Objects;
 
 import static com.kimnoel.sha256.Utils.WordUtils.*;
+import org.springframework.boot.test.context.SpringBootTest;
 
+@SpringBootTest
 public class WordUtilsTest {
 
 	@Test
