@@ -53,14 +53,14 @@ public class HashTest {
 	public void sha256Test() {
 		Hash hash = new Hash("abc");
 
-		Assertions.assertEquals("ba7816bf", hash.bitsToHash("A"));
-		Assertions.assertEquals("8f01cfea", hash.bitsToHash("B"));
-		Assertions.assertEquals("414140de", hash.bitsToHash("C"));
-		Assertions.assertEquals("5dae2223", hash.bitsToHash("D"));
-		Assertions.assertEquals("b00361a3", hash.bitsToHash("E"));
-		Assertions.assertEquals("96177a9c", hash.bitsToHash("F"));
-		Assertions.assertEquals("b410ff61", hash.bitsToHash("G"));
-		Assertions.assertEquals("f20015ad", hash.bitsToHash("H"));
-		Assertions.assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", hash.bitsToHash());
+		Assertions.assertEquals("ba7816bf", hash.getHexDigest("A"));
+		Assertions.assertEquals("8f01cfea", hash.getHexDigest("B"));
+		Assertions.assertEquals("414140de", hash.getHexDigest("C"));
+		Assertions.assertEquals("5dae2223", hash.getHexDigest("D"));
+		Assertions.assertEquals("b00361a3", hash.getHexDigest("E"));
+		Assertions.assertEquals("96177a9c", hash.getHexDigest("F"));
+		Assertions.assertEquals("b410ff61", hash.getHexDigest("G"));
+		Assertions.assertEquals("f20015ad", hash.getHexDigest("H"));
+		Assertions.assertEquals("ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad", hash.getHexDigest());
 	}
 }
