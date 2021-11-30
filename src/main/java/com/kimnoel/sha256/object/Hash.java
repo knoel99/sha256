@@ -202,7 +202,7 @@ public class Hash {
      * Convert each attribute in hexadecimal and concatenate them to build the hash of SHA-256.
      * @return SHA-256 hash
      */
-    public String bitsToHash() {
+    public String getHexDigest() {
         StringBuilder sb = new StringBuilder();
         try {
             for (Field field : this.getClass().getDeclaredFields()) {
@@ -222,7 +222,7 @@ public class Hash {
      * @param attribute a given attribute
      * @return SHA-256 hash
      */
-    public String bitsToHash(String attribute) {
+    public String getHexDigest(String attribute) {
         StringBuilder sb = new StringBuilder();
         switch (attribute) {
             case "A":
@@ -262,15 +262,15 @@ public class Hash {
     @Override
     public String toString() {
         return
-                "a= " + A + " = " + bitsToHash("A") + "\n" +
-                "b= " + B + " = " + bitsToHash("B") + "\n" +
-                "c= " + C + " = " + bitsToHash("C") + "\n" +
-                "d= " + D + " = " + bitsToHash("D") + "\n" +
-                "e= " + E + " = " + bitsToHash("E") + "\n" +
-                "f= " + F + " = " + bitsToHash("F") + "\n" +
-                "g= " + G + " = " + bitsToHash("G") + "\n" +
-                "h= " + H + " = " + bitsToHash("H") + "\n" +
-                bitsToHash();
+                "a= " + A + " = " + getHexDigest("A") + "\n" +
+                "b= " + B + " = " + getHexDigest("B") + "\n" +
+                "c= " + C + " = " + getHexDigest("C") + "\n" +
+                "d= " + D + " = " + getHexDigest("D") + "\n" +
+                "e= " + E + " = " + getHexDigest("E") + "\n" +
+                "f= " + F + " = " + getHexDigest("F") + "\n" +
+                "g= " + G + " = " + getHexDigest("G") + "\n" +
+                "h= " + H + " = " + getHexDigest("H") + "\n" +
+                getHexDigest();
     }
 
 }
