@@ -23,11 +23,18 @@ public class NumberUtils {
    }
 
     public static Number rightShift(Number number, int shift){
-        List<Integer> listBits = new ArrayList<>();
-        for (int index = 0; index < number.getListBits().size() - shift; index++) {
-            listBits.add(number.getListBits().get(index));
-        }
-        return new Number(listBits);
+        return new Number(Math.floor(Math.pow(2, -shift)*number.getNumber()));
     }
 
+    public static Number rotateRight(Number number, int shift){
+        double sum=0;
+
+        for (int k=0; k < shift; k++){
+            sum += number.getListBits().get(k)*Math.pow(2, k) *
+                    (Math.pow(2, number.getListBits().size() - 1)*Math.pow(2, -2*(k-shift)) -1);
+        }
+        double num = Math.pow(2, -shift)*number.getNumber() + sum;
+
+        return new Number(Math.floor(num));
+    }
 }

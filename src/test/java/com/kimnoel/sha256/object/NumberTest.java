@@ -32,4 +32,15 @@ public class NumberTest {
 		Assertions.assertEquals("1111101", actual.getBits());
 		Assertions.assertEquals("[1, 1, 1, 1, 1, 0, 1]", actual.getListBits().toString());
 	}
+
+	@Test
+	public void rotateRightTest() {
+		Number number = new Number(251d);
+		Number actual = NumberUtils.rightShift(number,1);
+
+		System.out.println(number.getBits());
+		//Assertions.assertEquals(125d, actual.getNumber());
+		Assertions.assertEquals("11111101", actual.getBits());
+		Assertions.assertEquals("[1, 1, 1, 1, 1, 1, 0, 1]", actual.getListBits().toString());
+	}
 }
