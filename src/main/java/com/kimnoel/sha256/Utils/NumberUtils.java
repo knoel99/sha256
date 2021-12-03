@@ -27,14 +27,22 @@ public class NumberUtils {
     }
 
     public static Number rotateRight(Number number, int shift){
-        double sum=0;
+        double sum1=0;
+        double sum2=0;
+        int nJava = number.getListMathBits().size();
+        int nMath = nJava - 1;
+        int xk;
 
-        for (int k=0; k < shift; k++){
-            sum += number.getListBits().get(k)*Math.pow(2, k) *
-                    (Math.pow(2, number.getListBits().size() - 1)*Math.pow(2, -2*(k-shift)) -1);
+        for (int k = shift; k < nJava ; k++){
+            xk = number.getListMathBits().get(k);
+            sum1 += xk*Math.pow(2, k - shift);
         }
-        double num = Math.pow(2, -shift)*number.getNumber() + sum;
 
-        return new Number(Math.floor(num));
+        for (int k=0; k <= shift - 1 ; k++){
+            xk = number.getListMathBits().get(k);
+            sum2 += xk*Math.pow(2, nMath + k - shift + 1);
+        }
+
+        return new Number(Math.floor(sum1 + sum2));
     }
 }
