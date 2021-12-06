@@ -5,6 +5,7 @@ import com.kimnoel.sha256.object.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -73,11 +74,28 @@ public class NumberUtils {
         return new Number(listBits);
     }
 
+    public static int xOR(Number x, int index1, int index2, int index3) {
+        Integer xk, yk, zk;
+        xk = x.getListBits().get(index1);
+        yk = x.getListBits().get(index2);
+        zk = x.getListBits().get(index3);
+
+        return (int) (Math.pow(xk - yk - zk,2) - 4*yk*zk + 3*xk*yk*zk);
+    }
+
+    public static int xOR(Number x, int index1, int index2) {
+        Integer xk, yk;
+        xk = x.getListBits().get(index1);
+        yk = x.getListBits().get(index2);
+
+        return (int) (Math.pow(xk - yk,2) );
+    }
+
 
     public static Number add(Number x, Number y) {
         List<Integer> listMathBits = new ArrayList<>();
         List<Integer> longest, shortest;
-        Integer zk;
+        int zk;
 
         // Set longest and shortest bit chain to avoid loop issue
         if (x.getListMathBits().size() >= y.getListMathBits().size()) {
@@ -87,7 +105,7 @@ public class NumberUtils {
             longest = new ArrayList<>(y.getListMathBits());
             shortest = new ArrayList<>(x.getListMathBits());
         }
-        
+
         // k = 0
         zk = shortest.get(0)+longest.get(0);
         listMathBits.add(zk % 2);
@@ -117,5 +135,38 @@ public class NumberUtils {
                 add(add(x,y) ,z ),
                 add(u,v)
                 );
+    }
+
+    /**
+     * Assume 32 bit
+     * @param x
+     * @return
+     */
+    public static Number sigma0(Number x) {
+        List<Integer> listMathBits = new ArrayList<>();
+        System.out.println(x.getListMathBits().size());
+
+        for (int k = 0; k < 14; k++) {
+            System.out.println("k= "+k+ " "+ (k+7) +" "+ (k+18) +" "+  (k+3));
+            listMathBits.add(xOR(x,k+7, k+18, k+3));
+        }
+        System.out.println("part2");
+        for (int k = 15; k < 25; k++) {
+            System.out.println("k= "+k+ " " + (k+7) +" "+ (k-15)+" "+ (k+3));
+            listMathBits.add(xOR(x,k+7, k-15, k+3));
+        }
+        System.out.println("part3");
+        for (int k = 26; k < 29; k++) {
+            listMathBits.add(xOR(x,k-26, k-15, k+3));
+
+        }
+        for (int k = 30; k < 32; k++) {
+            listMathBits.add(xOR(x,k-26, k-15));
+        }
+
+        Collections.reverse(listMathBits);
+        System.out.println(listMathBits);
+        return new Number(listMathBits);
+
     }
 }
