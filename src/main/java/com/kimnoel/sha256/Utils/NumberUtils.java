@@ -163,8 +163,27 @@ public class NumberUtils {
         }
 
         Collections.reverse(listMathBits);
-
         return new Number(listMathBits, x.getFormatNbBits());
+    }
 
+    public static Number bigSigma(Number x, int p, int q, int s) {
+        List<Integer> listMathBits = new ArrayList<>();
+        int n = x.getBits().length()-1;
+
+        for (int k = 0; k <= n-p; k++) {
+            listMathBits.add(xOR(x,k+p, k+q, k+s));
+        }
+        for (int k = n-p+1; k <= n-q; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k+q, k+s));
+        }
+        for (int k = n-q+1; k <= n-s; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k-n+q-1, k+s));
+        }
+        for (int k = n-s+1; k <= n; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k-n+q-1, k-n+s-1));
+        }
+
+        Collections.reverse(listMathBits);
+        return new Number(listMathBits, x.getFormatNbBits());
     }
 }

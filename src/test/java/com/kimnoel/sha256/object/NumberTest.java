@@ -261,5 +261,21 @@ public class NumberTest {
 		Assertions.assertEquals(expected, actual.getBits());
 	}
 
+	@Test
+	public void bigSigma0Test() {
+		String expected = "00111111000001111111001111111110";
+		Number x = new Number("00000000000000000011111111111111",32);
 
+		Number actual = NumberUtils.bigSigma(x,22,13,2);
+		Assertions.assertEquals(expected, actual.getBits());
+	}
+
+	@Test
+	public void bigSigma1Test() {
+		String expected = "00000011111111111111111101111000";
+		Number x = new Number("00000000000000000011111111111111",32);
+
+		Number actual = NumberUtils.bigSigma(x,25,11,6);
+		Assertions.assertEquals(expected, actual.getBits());
+	}
 }
