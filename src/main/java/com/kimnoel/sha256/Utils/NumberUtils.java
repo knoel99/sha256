@@ -21,17 +21,17 @@ public class NumberUtils {
         for (Integer bit: number.getListBits()) {
             listBits.add(1 - bit);
         }
-        return new Number(listBits);
+        return new Number(listBits, number.getFormatNbBits());
    }
 
     public static Number rightShift(Number number, int shift){
-        return new Number(Math.floor(Math.pow(2, -shift)*number.getNumber()));
+        return new Number(Math.floor(Math.pow(2, -shift)*number.getNumber()), number.getFormatNbBits());
     }
 
     public static Number rotateRight(Number number, int shift){
         double sum1=0;
         double sum2=0;
-        int nJava = number.getListMathBits().size();
+        int nJava = number.getBits().length();
         int nMath = nJava - 1;
         int xk;
 
@@ -45,7 +45,7 @@ public class NumberUtils {
             sum2 += xk*Math.pow(2, nMath + k - shift + 1);
         }
 
-        return new Number(Math.floor(sum1 + sum2));
+        return new Number(Math.floor(sum1 + sum2), number.getFormatNbBits());
     }
 
     public static Number xOR(Number x, Number y) {
@@ -57,7 +57,7 @@ public class NumberUtils {
             yk = y.getListBits().get(k);
             listBits.add((int) Math.pow(xk - yk,2));
         }
-        return new Number(listBits);
+        return new Number(listBits, x.getFormatNbBits());
     }
 
     public static Number xOR(Number x, Number y, Number z) {
@@ -71,24 +71,24 @@ public class NumberUtils {
 
             listBits.add((int) Math.pow(xk - yk - zk,2) - 4*yk*zk + 3*xk*yk*zk);
         }
-        return new Number(listBits);
+        return new Number(listBits, x.getFormatNbBits());
     }
 
     public static int xOR(Number x, int index1, int index2, int index3) {
         Integer xk, yk, zk;
-        xk = x.getListBits().get(index1);
-        yk = x.getListBits().get(index2);
-        zk = x.getListBits().get(index3);
+        xk = x.getListMathBits().get(index1);
+        yk = x.getListMathBits().get(index2);
+        zk = x.getListMathBits().get(index3);
 
-        return (int) (Math.pow(xk - yk - zk,2) - 4*yk*zk + 3*xk*yk*zk);
+        return (int) (Math.pow(xk - yk - zk, 2) - 4 * yk * zk + 3 * xk * yk * zk);
     }
 
     public static int xOR(Number x, int index1, int index2) {
         Integer xk, yk;
-        xk = x.getListBits().get(index1);
-        yk = x.getListBits().get(index2);
+        xk = x.getListMathBits().get(index1);
+        yk = x.getListMathBits().get(index2);
 
-        return (int) (Math.pow(xk - yk,2) );
+        return (int) Math.pow(xk - yk, 2);
     }
 
 
@@ -126,7 +126,7 @@ public class NumberUtils {
         if (zk >= 2) listMathBits.add(zk / 2);
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits);
+        return new Number(listMathBits, x.getFormatNbBits());
     }
 
 
@@ -137,36 +137,34 @@ public class NumberUtils {
                 );
     }
 
-    /**
-     * Assume 32 bit
-     * @param x
-     * @return
-     */
-    public static Number sigma0(Number x) {
+    public static Number sigma0Definition(Number x) {
+        Number r7 = rotateRight(x, 7);
+        Number r18 = rotateRight(x, 18);
+        Number s3 = rightShift(x,3);
+
+        return xOR(r7, r18, s3);
+    }
+
+    public static Number sigma(Number x, int p, int q, int s) {
         List<Integer> listMathBits = new ArrayList<>();
-        System.out.println(x.getListMathBits().size());
+        int n = x.getBits().length()-1;
 
-        for (int k = 0; k < 14; k++) {
-            System.out.println("k= "+k+ " "+ (k+7) +" "+ (k+18) +" "+  (k+3));
-            listMathBits.add(xOR(x,k+7, k+18, k+3));
+        for (int k = 0; k <= n-p; k++) {
+            listMathBits.add(xOR(x,k+p, k+q, k+s));
         }
-        System.out.println("part2");
-        for (int k = 15; k < 25; k++) {
-            System.out.println("k= "+k+ " " + (k+7) +" "+ (k-15)+" "+ (k+3));
-            listMathBits.add(xOR(x,k+7, k-15, k+3));
+        for (int k = n-p+1; k <= n-q; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k+q, k+s));
         }
-        System.out.println("part3");
-        for (int k = 26; k < 29; k++) {
-            listMathBits.add(xOR(x,k-26, k-15, k+3));
-
+        for (int k = n-q+1; k <= n-s; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k-n+q-1, k+s));
         }
-        for (int k = 30; k < 32; k++) {
-            listMathBits.add(xOR(x,k-26, k-15));
+        for (int k = n-s+1; k <= n; k++) {
+            listMathBits.add(xOR(x,k-n+p-1, k-n+q-1));
         }
 
         Collections.reverse(listMathBits);
-        System.out.println(listMathBits);
-        return new Number(listMathBits);
+
+        return new Number(listMathBits, x.getFormatNbBits());
 
     }
 }

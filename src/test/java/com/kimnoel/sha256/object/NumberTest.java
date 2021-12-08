@@ -75,10 +75,28 @@ public class NumberTest {
 
 	@Test
 	public void rotateRightTest3() {
-		Number number = new Number("00000000000000000010111111111111");
-		Number actual = NumberUtils.rotateRight(number,1);
+		String input 	  = "00000000000000000010111111111111";
+		String expected1  = "10000000000000000001011111111111";
+		String expected2  = "11000000000000000000101111111111";
+		String expected16 = "00101111111111110000000000000000";
 
-		Assertions.assertEquals("1000000000000000001011111111111", actual.getBits());
+		Number number = new Number(input, 32);
+		Number actual = NumberUtils.rotateRight(number,1);
+		Assertions.assertEquals(expected1, actual.getBits());
+
+		actual = NumberUtils.rotateRight(number,2);
+		Assertions.assertEquals(expected2, actual.getBits());
+
+		actual = NumberUtils.rotateRight(number,16);
+		Assertions.assertEquals(expected16, actual.getBits());
+	}
+
+	@Test
+	public void rotateRightTest4() {
+		Number number = new Number("00000000000000000011111111111111", 32);
+		Number actual = NumberUtils.rotateRight(number,7);
+
+		Assertions.assertEquals("11111110000000000000000001111111", actual.getBits());
 	}
 
 	@Test
@@ -106,6 +124,29 @@ public class NumberTest {
 
 		actual = NumberUtils.xOR(x,z,y);
 		Assertions.assertEquals("[0, 1, 0, 0, 0, 0, 0, 1, 0]", actual.getListBits().toString());
+	}
+
+	@Test
+	public void xOrTest2() {
+		String inputX 	= "00000000000000000011111111111111";
+		String inputY 	= "00000000000000000011101110111001";
+		String inputZ 	= "00000000000000000011110110111101";
+
+		String expected1= "00000000000000000000000000000000";
+		String expected2= "00000000000000000000010001000110";
+		String expected3= "00000000000000000000000001000010";
+
+		Number x = new Number(inputX);
+		Number y = new Number(inputY);
+		Number z = new Number(inputZ);
+		Number actual = NumberUtils.xOR(x,x);
+		Assertions.assertEquals(expected1, actual.getBits());
+
+		actual = NumberUtils.xOR(x,y);
+		Assertions.assertEquals(expected2, actual.getBits());
+
+		actual = NumberUtils.xOR(x,y,z);
+		Assertions.assertEquals(expected3, actual.getBits());
 	}
 
 	@Test
@@ -148,24 +189,77 @@ public class NumberTest {
 
 	@Test
 	public void sigma0Test() {
-		String expected = "11110001111111111100011110000000";
-		Number x = new Number("00000000000000000011111111111111");
-		Number actual = NumberUtils.sigma0(x);
+		String expected = "00000010000000000100000000000000";
+		Number x = new Number("00000000000000000000000000000001",32);
+
+		Number actual = NumberUtils.sigma(x,18,7,3);
+		Assertions.assertEquals(expected, actual.getBits());
+
+		expected = "11110001111111111100011110000000";
+		x = new Number("00000000000000000011111111111111",32);
+		actual = NumberUtils.sigma(x,18,7,3);
+		Assertions.assertEquals(expected, actual.getBits());
+
+		expected = "00000010000000000100000000000000";
+		x = new Number("00000000000000000000000000000001",32);
+		actual = NumberUtils.sigma(x,18,7,3);
 		Assertions.assertEquals(expected, actual.getBits());
 	}
 
 	@Test
-	public void test() {
-		Long l1 = 288001745378344961L/64;
-		Long l2 = 17592045011169L/16384;
-		Long l3 = 943649537L/68719476736L;
+	public void sigma0DefinitionTest() {
+		String input 			= "00000000000000000011111111111111";
+		String expectedR7 		= "11111110000000000000000001111111";
+		String expectedR18 		= "00001111111111111100000000000000";
+		String expectedS3 		= "00000000000000000000011111111111";
+		String expectedSigma0 	= "11110001111111111100011110000000";
 
-		System.out.println(l1);
-		System.out.println(l2);
-		System.out.println(l3);
+		Number x = new Number(input,32);
 
-		//Number x1 = new Number(l1);
+		Number actualR7 = NumberUtils.rotateRight(x, 7);
+		Assertions.assertEquals(expectedR7, actualR7.getBits());
 
+		Number actualR18 = NumberUtils.rotateRight(x, 18);
+		Assertions.assertEquals(expectedR18, actualR18.getBits());
+
+		Number actualS3 = NumberUtils.rightShift(x, 3);
+		Assertions.assertEquals(expectedS3, actualS3.getBits());
+
+		Number actualSigma0Definition = NumberUtils.sigma0Definition(x);
+		Assertions.assertEquals(expectedSigma0, actualSigma0Definition.getBits());
 	}
+
+	@Test
+	public void sigma0DefinitionTest2() {
+		String input 			= "00000000000000000000000000000001";
+		String expectedR7 		= "00000010000000000000000000000000";
+		String expectedR18 		= "00000000000000000100000000000000";
+		String expectedS3 		= "00000000000000000000000000000000";
+		String expectedSigma0 	= "00000010000000000100000000000000";
+
+		Number x = new Number(input,32);
+
+		Number actualR7 = NumberUtils.rotateRight(x, 7);
+		Assertions.assertEquals(expectedR7, actualR7.getBits());
+
+		Number actualR18 = NumberUtils.rotateRight(x, 18);
+		Assertions.assertEquals(expectedR18, actualR18.getBits());
+
+		Number actualS3 = NumberUtils.rightShift(x, 3);
+		Assertions.assertEquals(expectedS3, actualS3.getBits());
+
+		Number actualSigma0Definition = NumberUtils.sigma0Definition(x);
+		Assertions.assertEquals(expectedSigma0, actualSigma0Definition.getBits());
+	}
+
+	@Test
+	public void sigma1Test() {
+		String expected = "00011000000000000110000000001111";
+		Number x = new Number("00000000000000000011111111111111",32);
+
+		Number actual = NumberUtils.sigma(x,19,17,10);
+		Assertions.assertEquals(expected, actual.getBits());
+	}
+
 
 }

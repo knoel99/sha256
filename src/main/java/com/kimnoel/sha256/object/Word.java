@@ -20,7 +20,7 @@ public class Word {
     public Word(){}
 
     public Word(String bits){
-        this.bits = BitUtils.toNBits(bits, 32);;
+        this.bits = BitUtils.toNBits(bits, 32);
         this.length = this.bits.length();
     }
 

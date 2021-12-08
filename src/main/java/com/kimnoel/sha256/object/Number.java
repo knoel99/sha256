@@ -23,6 +23,7 @@ public class Number {
     String bits;
     List<Integer> listBits;
     List<Integer> listMathBits;
+    int formatNbBits;
 
 
 
@@ -31,7 +32,24 @@ public class Number {
         this.bits = Long.toBinaryString(number.longValue());
         this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
         this.listMathBits = new ArrayList<>(this.listBits);
+        this.formatNbBits = 0;
         Collections.reverse(this.listMathBits);
+    }
+    public Number(Double number, int formatNbBits){
+        this.formatNbBits = formatNbBits;
+        if (formatNbBits == 0) {
+            this.number = number;
+            this.bits = Long.toBinaryString(number.longValue());
+            this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
+        } else {
+            this.number = number;
+            this.bits = Long.toBinaryString(number.longValue());
+            this.bits = "0".repeat(formatNbBits - this.bits.length()) + this.bits;
+            this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
+        }
+        this.listMathBits = new ArrayList<>(this.listBits);
+        Collections.reverse(this.listMathBits);
+
     }
 
     public Number(String bits){
@@ -42,10 +60,41 @@ public class Number {
         Collections.reverse(this.listMathBits);
     }
 
+    public Number(String bits, int formatNbBits){
+        this.formatNbBits = formatNbBits;
+        if (formatNbBits == 0) {
+            this.number = (double) Integer.parseInt(bits, 2);
+            this.bits = bits;
+            this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
+        } else {
+            String bitsNoZerosInHeader = bits.substring(formatNbBits - bits.length() + 1);
+            this.number = (double) Integer.parseInt(bitsNoZerosInHeader, 2);
+            this.bits = bits;
+            this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
+        }
+        this.listMathBits = new ArrayList<>(this.listBits);
+        Collections.reverse(this.listMathBits);
+    }
+
     public Number(List<Integer> listBits){
         this.listBits = listBits;
         this.bits = listBits.stream().map(Object::toString).collect(Collectors.joining());
         this.number = (double) Integer.parseInt(this.bits, 2);
+        this.listMathBits = new ArrayList<>(this.listBits);
+        Collections.reverse(this.listMathBits);
+    }
+
+    public Number(List<Integer> listBits, int formatNbBits){
+        this.formatNbBits = formatNbBits;
+        if (formatNbBits == 0) {
+            this.listBits = listBits;
+            this.bits = listBits.stream().map(Object::toString).collect(Collectors.joining());
+            this.number = (double) Integer.parseInt(this.bits, 2);
+        } else {
+            this.listBits = listBits;
+            this.bits = listBits.stream().map(Object::toString).collect(Collectors.joining());
+            this.number = (double) Integer.parseInt(this.bits.substring(formatNbBits-this.bits.length()+1), 2);
+        }
         this.listMathBits = new ArrayList<>(this.listBits);
         Collections.reverse(this.listMathBits);
     }
