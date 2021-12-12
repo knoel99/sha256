@@ -20,8 +20,38 @@ public class HashUtilsTest {
 		expected = "c775e7b757ede630cd0aa1113bd102661ab38829ca52a6422ab782862f268646";
 		actual = HashUtils.hash("1234567890");
 		Assertions.assertEquals(expected, actual);
+
+		expected = "a0340bf98be5c19ca7c9b33f4dd178d0ecd4ebb834cd3be7a418ff7a7f56d68b";
+		actual = HashUtils.hash(hexToAscii("04e00020a695ca9d17a9061b3f11b8a86bbabde295171707d0670200000000000000000034f200f7ce41f26b24239610c8ebad64226f46eb6fbca7b3b8ade86a19c5bca2a921b5611fa20b17b477c0aa"));
+		Assertions.assertEquals(expected, actual);
+
+		expected = "71fa7d6e3d9e7ffa52d42e75ca9ce5c22513578b65fb09000000000000000000";
+		actual = HashUtils.hash(hexToAscii("a0340bf98be5c19ca7c9b33f4dd178d0ecd4ebb834cd3be7a418ff7a7f56d68b"));
+		Assertions.assertEquals(expected, actual);
+
+	}
+	private  String hexToAscii(String hexStr) {
+		StringBuilder output = new StringBuilder("");
+
+		for (int i = 0; i < hexStr.length(); i += 2) {
+			String str = hexStr.substring(i, i + 2);
+			int k = Integer.parseInt(str, 16);
+			char c =(char) k;
+			output.append((char) Integer.parseInt(str, 16));
+		}
+
+		return output.toString();
 	}
 
+	private  String asciiToHex(String asciiStr) {
+		char[] chars = asciiStr.toCharArray();
+		StringBuilder hex = new StringBuilder();
+		for (char ch : chars) {
+			hex.append(Integer.toHexString((int) ch));
+		}
+
+		return hex.toString();
+	}
 	@Test
 	public void sha256LongMessageTest() {
 		String expected = "2ece3a9ac0e61275fe34d89ea768aff7bf6df0b2bf37f0b08113f9b0fc9bbc83";

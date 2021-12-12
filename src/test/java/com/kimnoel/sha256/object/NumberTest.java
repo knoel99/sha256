@@ -5,7 +5,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.kimnoel.sha256.Utils.WordUtils.sigma0;
+import static com.kimnoel.sha256.Utils.WordUtils.*;
+import static com.kimnoel.sha256.Utils.WordUtils.majority;
 
 @SpringBootTest
 public class NumberTest {
@@ -277,5 +278,30 @@ public class NumberTest {
 
 		Number actual = NumberUtils.bigSigma(x,25,11,6);
 		Assertions.assertEquals(expected, actual.getBits());
+	}
+
+	@Test
+	public void choiceTest() {
+		String expected = "11111111000000000000000011111111";
+		String bits1  = "00000000111111110000000011111111";
+		String bits2  = "00000000000000001111111111111111";
+		String bits3  = "11111111111111110000000000000000";
+		Number x = new Number(bits1,32);
+		Number y = new Number(bits2,32);
+		Number z = new Number(bits3,32);
+
+		Assertions.assertEquals(expected, NumberUtils.choice(x,y,z).getBits());
+	}
+
+	@Test
+	public void majorityTest() {
+		String expected = "00000000111111110000000011111111";
+		String bits1  = "00000000111111110000000011111111";
+		String bits2  = "00000000000000001111111111111111";
+		String bits3  = "11111111111111110000000000000000";
+		Number x = new Number(bits1,32);
+		Number y = new Number(bits2,32);
+		Number z = new Number(bits3,32);
+		Assertions.assertEquals(expected, NumberUtils.majority(x,y,z).getBits());
 	}
 }

@@ -82,6 +82,8 @@ public class Hash {
         try {
             String bitsMessage = BitUtils.messageToBits(message);
             PaddedMessage paddedMessage = new PaddedMessage(bitsMessage);
+            System.out.println("message = "+message);
+            System.out.println("paddedMessage = "+paddedMessage);
             List<MessageSchedule> messageSchedules = new ArrayList<>();
 
             Arrays.stream(paddedMessage.toString().split("(?<=\\G.{512})"))

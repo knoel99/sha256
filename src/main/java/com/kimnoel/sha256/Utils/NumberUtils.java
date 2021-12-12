@@ -186,4 +186,42 @@ public class NumberUtils {
         Collections.reverse(listMathBits);
         return new Number(listMathBits, x.getFormatNbBits());
     }
+
+    public static Number choice(Number x, Number y, Number z) {
+        List<Integer> listMathBits = new ArrayList<>();
+        int n = x.getBits().length()-1;
+        Integer xk, yk, zk;
+
+        for (int k = 0; k <= n; k++) {
+            xk = x.getListMathBits().get(k);
+            yk = y.getListMathBits().get(k);
+            zk = z.getListMathBits().get(k);
+
+            listMathBits.add((int) Math.pow(xk*yk - (1 - xk)*zk, 2));
+        }
+
+        Collections.reverse(listMathBits);
+        return new Number(listMathBits, x.getFormatNbBits());
+    }
+
+    public static Number majority(Number x, Number y, Number z) {
+        List<Integer> listMathBits = new ArrayList<>();
+        int n = x.getBits().length()-1;
+        Integer xk, yk, zk;
+        Integer xk2, yk2, zk2;
+
+        for (int k = 0; k <= n; k++) {
+            xk = x.getListMathBits().get(k);
+            yk = y.getListMathBits().get(k);
+            zk = z.getListMathBits().get(k);
+            xk2 = (int) Math.pow(xk, 2);
+            yk2 = (int) Math.pow(yk, 2);
+            zk2 = (int) Math.pow(zk, 2);
+
+            listMathBits.add((int) (Math.pow(xk*yk - xk*zk - yk*zk, 2) - 4*xk*yk*zk2 +3*xk2*yk2*zk2));
+        }
+
+        Collections.reverse(listMathBits);
+        return new Number(listMathBits, x.getFormatNbBits());
+    }
 }
