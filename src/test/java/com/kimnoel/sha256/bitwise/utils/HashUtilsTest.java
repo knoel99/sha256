@@ -1,4 +1,4 @@
-package com.kimnoel.sha256.Utils;
+package com.kimnoel.sha256.bitwise.utils;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

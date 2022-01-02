@@ -1,6 +1,6 @@
-package com.kimnoel.sha256.Utils;
+package com.kimnoel.sha256.bitwise.utils;
 
-import com.kimnoel.sha256.object.Hash;
+import com.kimnoel.sha256.bitwise.object.Hash;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

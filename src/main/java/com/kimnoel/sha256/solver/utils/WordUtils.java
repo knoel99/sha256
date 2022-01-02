@@ -1,34 +1,32 @@
-package com.kimnoel.sha256.Utils;
+package com.kimnoel.sha256.solver.utils;
 
-import com.kimnoel.sha256.object.Number;
-import com.kimnoel.sha256.object.Word;
+import com.kimnoel.sha256.solver.object.Word;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class NumberUtils {
+public class WordUtils {
 
-    private static final Logger logger = LoggerFactory.getLogger(NumberUtils.class);
+    private static final Logger logger = LoggerFactory.getLogger(WordUtils.class);
 
-    private NumberUtils(){}
+    private WordUtils(){}
 
-   public static Number not(Number number){
+   public static Word not(Word number){
         List<Integer> listBits = new ArrayList<>();
         for (Integer bit: number.getListBits()) {
             listBits.add(1 - bit);
         }
-        return new Number(listBits, number.getFormatNbBits());
+        return new Word(listBits, number.getFormatNbBits());
    }
 
-    public static Number rightShift(Number number, int shift){
-        return new Number(Math.floor(Math.pow(2, -shift)*number.getNumber()), number.getFormatNbBits());
+    public static Word rightShift(Word number, int shift){
+        return new Word(Math.floor(Math.pow(2, -shift)*number.getNumber()), number.getFormatNbBits());
     }
 
-    public static Number rotateRight(Number number, int shift){
+    public static Word rotateRight(Word number, int shift){
         double sum1=0;
         double sum2=0;
         int nJava = number.getBits().length();
@@ -45,10 +43,10 @@ public class NumberUtils {
             sum2 += xk*Math.pow(2, nMath + k - shift + 1);
         }
 
-        return new Number(Math.floor(sum1 + sum2), number.getFormatNbBits());
+        return new Word(Math.floor(sum1 + sum2), number.getFormatNbBits());
     }
 
-    public static Number xOR(Number x, Number y) {
+    public static Word xOR(Word x, Word y) {
         List<Integer> listBits = new ArrayList<>();
         Integer xk, yk;
 
@@ -57,10 +55,10 @@ public class NumberUtils {
             yk = y.getListBits().get(k);
             listBits.add((int) Math.pow(xk - yk,2));
         }
-        return new Number(listBits, x.getFormatNbBits());
+        return new Word(listBits, x.getFormatNbBits());
     }
 
-    public static Number xOR(Number x, Number y, Number z) {
+    public static Word xOR(Word x, Word y, Word z) {
         List<Integer> listBits = new ArrayList<>();
         Integer xk, yk, zk;
 
@@ -71,10 +69,10 @@ public class NumberUtils {
 
             listBits.add((int) Math.pow(xk - yk - zk,2) - 4*yk*zk + 3*xk*yk*zk);
         }
-        return new Number(listBits, x.getFormatNbBits());
+        return new Word(listBits, x.getFormatNbBits());
     }
 
-    public static int xOR(Number x, int index1, int index2, int index3) {
+    public static int xOR(Word x, int index1, int index2, int index3) {
         Integer xk, yk, zk;
         xk = x.getListMathBits().get(index1);
         yk = x.getListMathBits().get(index2);
@@ -83,7 +81,7 @@ public class NumberUtils {
         return (int) (Math.pow(xk - yk - zk, 2) - 4 * yk * zk + 3 * xk * yk * zk);
     }
 
-    public static int xOR(Number x, int index1, int index2) {
+    public static int xOR(Word x, int index1, int index2) {
         Integer xk, yk;
         xk = x.getListMathBits().get(index1);
         yk = x.getListMathBits().get(index2);
@@ -92,7 +90,7 @@ public class NumberUtils {
     }
 
 
-    public static Number add(Number x, Number y) {
+    public static Word add(Word x, Word y) {
         List<Integer> listMathBits = new ArrayList<>();
         List<Integer> longest, shortest;
         int zk;
@@ -126,26 +124,26 @@ public class NumberUtils {
         if (zk >= 2) listMathBits.add(zk / 2);
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits, x.getFormatNbBits());
+        return new Word(listMathBits, x.getFormatNbBits());
     }
 
 
-    public static Number add(Number x, Number y, Number z, Number u, Number v) {
+    public static Word add(Word x, Word y, Word z, Word u, Word v) {
         return add(
                 add(add(x,y) ,z ),
                 add(u,v)
                 );
     }
 
-    public static Number sigma0Definition(Number x) {
-        Number r7 = rotateRight(x, 7);
-        Number r18 = rotateRight(x, 18);
-        Number s3 = rightShift(x,3);
+    public static Word sigma0Definition(Word x) {
+        Word r7 = rotateRight(x, 7);
+        Word r18 = rotateRight(x, 18);
+        Word s3 = rightShift(x,3);
 
         return xOR(r7, r18, s3);
     }
 
-    public static Number sigma(Number x, int p, int q, int s) {
+    public static Word sigma(Word x, int p, int q, int s) {
         List<Integer> listMathBits = new ArrayList<>();
         int n = x.getBits().length()-1;
 
@@ -163,10 +161,10 @@ public class NumberUtils {
         }
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits, x.getFormatNbBits());
+        return new Word(listMathBits, x.getFormatNbBits());
     }
 
-    public static Number bigSigma(Number x, int p, int q, int s) {
+    public static Word bigSigma(Word x, int p, int q, int s) {
         List<Integer> listMathBits = new ArrayList<>();
         int n = x.getBits().length()-1;
 
@@ -184,10 +182,10 @@ public class NumberUtils {
         }
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits, x.getFormatNbBits());
+        return new Word(listMathBits, x.getFormatNbBits());
     }
 
-    public static Number choice(Number x, Number y, Number z) {
+    public static Word choice(Word x, Word y, Word z) {
         List<Integer> listMathBits = new ArrayList<>();
         int n = x.getBits().length()-1;
         Integer xk, yk, zk;
@@ -201,10 +199,10 @@ public class NumberUtils {
         }
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits, x.getFormatNbBits());
+        return new Word(listMathBits, x.getFormatNbBits());
     }
 
-    public static Number majority(Number x, Number y, Number z) {
+    public static Word majority(Word x, Word y, Word z) {
         List<Integer> listMathBits = new ArrayList<>();
         int n = x.getBits().length()-1;
         Integer xk, yk, zk;
@@ -222,6 +220,6 @@ public class NumberUtils {
         }
 
         Collections.reverse(listMathBits);
-        return new Number(listMathBits, x.getFormatNbBits());
+        return new Word(listMathBits, x.getFormatNbBits());
     }
 }

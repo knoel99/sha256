@@ -1,6 +1,6 @@
-package com.kimnoel.sha256.object;
+package com.kimnoel.sha256.bitwise.object;
 
-import com.kimnoel.sha256.Utils.WordUtils;
+import com.kimnoel.sha256.bitwise.utils.WordUtils;
 
 import java.util.ArrayList;
 import java.util.List;

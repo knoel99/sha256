@@ -1,4 +1,4 @@
-package com.kimnoel.sha256.object;
+package com.kimnoel.sha256.solver.object;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -16,8 +16,8 @@ import java.util.stream.Collectors;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Number {
-    private static final Logger logger = LoggerFactory.getLogger(Number.class);
+public class Word {
+    private static final Logger logger = LoggerFactory.getLogger(Word.class);
 
     Double number;
     String bits;
@@ -27,7 +27,7 @@ public class Number {
 
 
 
-    public Number(Double number){
+    public Word(Double number){
         this.number = number;
         this.bits = Long.toBinaryString(number.longValue());
         this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
@@ -35,7 +35,7 @@ public class Number {
         this.formatNbBits = 0;
         Collections.reverse(this.listMathBits);
     }
-    public Number(Double number, int formatNbBits){
+    public Word(Double number, int formatNbBits){
         this.formatNbBits = formatNbBits;
         if (formatNbBits == 0) {
             this.number = number;
@@ -52,7 +52,7 @@ public class Number {
 
     }
 
-    public Number(String bits){
+    public Word(String bits){
         this.number = (double) Integer.parseInt(bits, 2);
         this.bits = bits;
         this.listBits = bits.chars().mapToObj(Character::getNumericValue).collect(Collectors.toList());
@@ -60,7 +60,7 @@ public class Number {
         Collections.reverse(this.listMathBits);
     }
 
-    public Number(String bits, int formatNbBits){
+    public Word(String bits, int formatNbBits){
         this.formatNbBits = formatNbBits;
         if (formatNbBits == 0) {
             this.number = (double) Integer.parseInt(bits, 2);
@@ -76,7 +76,7 @@ public class Number {
         Collections.reverse(this.listMathBits);
     }
 
-    public Number(List<Integer> listBits){
+    public Word(List<Integer> listBits){
         this.listBits = listBits;
         this.bits = listBits.stream().map(Object::toString).collect(Collectors.joining());
         this.number = (double) Integer.parseInt(this.bits, 2);
@@ -84,7 +84,7 @@ public class Number {
         Collections.reverse(this.listMathBits);
     }
 
-    public Number(List<Integer> listBits, int formatNbBits){
+    public Word(List<Integer> listBits, int formatNbBits){
         this.formatNbBits = formatNbBits;
         if (formatNbBits == 0) {
             this.listBits = listBits;

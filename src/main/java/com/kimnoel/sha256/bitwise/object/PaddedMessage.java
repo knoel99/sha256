@@ -1,7 +1,7 @@
-package com.kimnoel.sha256.object;
+package com.kimnoel.sha256.bitwise.object;
 
 
-import com.kimnoel.sha256.Utils.BitUtils;
+import com.kimnoel.sha256.bitwise.utils.BitUtils;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -1,7 +1,6 @@
-package com.kimnoel.sha256.config;
+package com.kimnoel.sha256.bitwise.config;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.net.URL;
 import java.util.Properties;
 

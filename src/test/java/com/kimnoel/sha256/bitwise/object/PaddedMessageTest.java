@@ -1,6 +1,6 @@
-package com.kimnoel.sha256.object;
+package com.kimnoel.sha256.bitwise.object;
 
-import com.kimnoel.sha256.Utils.BitUtils;
+import com.kimnoel.sha256.bitwise.utils.BitUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

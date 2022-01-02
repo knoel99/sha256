@@ -1,4 +1,4 @@
-package com.kimnoel.sha256.Utils;
+package com.kimnoel.sha256.bitwise.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

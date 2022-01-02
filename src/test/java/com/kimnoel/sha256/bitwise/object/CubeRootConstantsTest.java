@@ -1,10 +1,10 @@
-package com.kimnoel.sha256.object;
+package com.kimnoel.sha256.bitwise.object;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static com.kimnoel.sha256.object.CubeRootConstants.fractionalPartOfCubeRootTo32Bits;
+import static com.kimnoel.sha256.bitwise.object.CubeRootConstants.fractionalPartOfCubeRootTo32Bits;
 
 @SpringBootTest
 public class CubeRootConstantsTest {

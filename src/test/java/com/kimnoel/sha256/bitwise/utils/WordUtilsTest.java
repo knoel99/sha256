@@ -1,13 +1,13 @@
-package com.kimnoel.sha256.Utils;
+package com.kimnoel.sha256.bitwise.utils;
 
-import com.kimnoel.sha256.object.*;
+import com.kimnoel.sha256.bitwise.object.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static com.kimnoel.sha256.Utils.WordUtils.*;
+import static com.kimnoel.sha256.bitwise.utils.WordUtils.*;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
