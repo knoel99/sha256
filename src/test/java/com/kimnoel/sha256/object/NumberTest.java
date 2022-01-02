@@ -189,6 +189,19 @@ public class NumberTest {
 	}
 
 	@Test
+	public void add3Test() {
+		Number x = new Number("111111");
+		Number y = new Number("111111");
+		Number z = new Number("111111");
+		Number u = new Number("111111");
+		Number v = new Number("111111");
+
+		Number expected = new Number(315d);
+		Number actual = NumberUtils.add(x,y,z,u,v);
+		Assertions.assertEquals(expected.getListBits().toString(), actual.getListBits().toString());
+	}
+
+	@Test
 	public void sigma0Test() {
 		String expected = "00000010000000000100000000000000";
 		Number x = new Number("00000000000000000000000000000001",32);
